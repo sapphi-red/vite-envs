@@ -1,0 +1,42 @@
+diff --git a/dist/client.cjs b/dist/client.cjs
+index 94251cb03527a5a0372e52208c04ef5ba4976568..4eff373a4871098e44ceb7c1caffa3bd33682026 100644
+--- a/dist/client.cjs
++++ b/dist/client.cjs
+@@ -365,7 +365,9 @@ ${getStack()}`), 2e3);
+       lineOffset: 0,
+       columnOffset: -codeDefinition.length
+     };
+-    const fn = vm__default["default"].runInThisContext(code, options);
++    const fn = this.options.vmContext
++      ? vm__default["default"].runInContext(code, this.options.vmContext, options)
++      : vm__default["default"].runInThisContext(code, options);
+     await fn(...Object.values(context));
+   }
+   prepareContext(context) {
+diff --git a/dist/client.mjs b/dist/client.mjs
+index cc2e44f3bbb4ac2450ba7750e8a92f5987fb560c..c291f6151148549f1e6ed12a55276d8e3f881738 100644
+--- a/dist/client.mjs
++++ b/dist/client.mjs
+@@ -338,7 +338,9 @@ ${getStack()}`), 2e3);
+       lineOffset: 0,
+       columnOffset: -codeDefinition.length
+     };
+-    const fn = vm.runInThisContext(code, options);
++    const fn = this.options.vmContext
++      ? vm.runInContext(code, this.options.vmContext, options)
++      : vm.runInThisContext(code, options);
+     await fn(...Object.values(context));
+   }
+   prepareContext(context) {
+diff --git a/dist/types-2dc895bd.d.ts b/dist/types-2dc895bd.d.ts
+index 2f04f08e263928274e7374b3d243a30590833ee3..405cbae0b14560a43a80afe683a6fa87a251b74c 100644
+--- a/dist/types-2dc895bd.d.ts
++++ b/dist/types-2dc895bd.d.ts
+@@ -243,6 +243,7 @@ interface ViteNodeRunnerOptions {
+     interopDefault?: boolean;
+     requestStubs?: Record<string, any>;
+     debug?: boolean;
++    vmContext?: Record<string, any>;
+ }
+ interface ViteNodeResolveId {
+     external?: boolean | 'absolute' | 'relative';

@@ -1,0 +1,11 @@
+{
+  "name": "vite-envs-monorepo",
+  "type": "module",
+  "private": true,
+  "packageManager": "pnpm@8.7.1",
+  "pnpm": {
+    "patchedDependencies": {
+      "vite-node@0.34.3": "patches/vite-node@0.34.3.patch"
+    }
+  }
+}
