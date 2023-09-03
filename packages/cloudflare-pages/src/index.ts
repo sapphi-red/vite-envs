@@ -8,7 +8,7 @@ import fs from 'node:fs'
 const extensions = ['ts', 'js', 'mts', 'mjs']
 
 type Options = {
-  miniflareOptions: Omit<SharedOptions & WorkerOptions, 'script' | 'modules'>
+  miniflareOptions?: Omit<SharedOptions & WorkerOptions, 'script' | 'modules'>
   /**
    * Whether to inject bindings as a global variable `$GlobalBindings`.
    *
@@ -17,7 +17,7 @@ type Options = {
   enableGlobalBindings?: boolean
 }
 
-export const cloudflarePagesEnv = ({ miniflareOptions, ...additionalOptions }: Options): ViteEnvironment => {
+export const cloudflarePagesEnv = ({ miniflareOptions = {}, ...additionalOptions }: Options): ViteEnvironment => {
   return {
     key: 'workerd',
     async setup() {
