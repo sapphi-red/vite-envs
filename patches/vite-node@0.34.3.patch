@@ -1,8 +1,48 @@
 diff --git a/dist/client.cjs b/dist/client.cjs
-index 94251cb03527a5a0372e52208c04ef5ba4976568..4eff373a4871098e44ceb7c1caffa3bd33682026 100644
+index 94251cb03527a5a0372e52208c04ef5ba4976568..52e31c243f6a4cceadaf2ae0e6d1c317c3ef8dcd 100644
 --- a/dist/client.cjs
 +++ b/dist/client.cjs
-@@ -365,7 +365,9 @@ ${getStack()}`), 2e3);
+@@ -340,32 +340,40 @@ ${getStack()}`), 2e3);
+       __vite_ssr_exports__: exports,
+       __vite_ssr_exportAll__: (obj) => exportAll(exports, obj),
+       __vite_ssr_import_meta__: meta,
+-      // cjs compact
+-      require: module$1.createRequire(href),
+-      exports: cjsExports,
+-      module: moduleProxy,
+-      __filename,
+-      __dirname: path.dirname(__filename)
++      ...(
++        this.options.vmContext
++          ? {}
++          : {
++            // cjs compact
++            require: module$1.createRequire(href),
++            exports: cjsExports,
++            module: moduleProxy,
++            __filename,
++            __dirname: path.dirname(__filename)
++          }
++      )
+     });
+     debugExecute(__filename);
+     if (transformed[0] === "#")
+       transformed = transformed.replace(/^\#\!.*/, (s) => " ".repeat(s.length));
+-    await this.runModule(context, transformed);
++    await this.runModule(context, transformed, __filename);
+     return exports;
+   }
+   getContextPrimitives() {
+     return { Object, Reflect, Symbol };
+   }
+-  async runModule(context, transformed) {
++  async runModule(context, transformed, filename) {
+     const codeDefinition = `'use strict';async (${Object.keys(context).join(",")})=>{{`;
+     const code = `${codeDefinition}${transformed}
+ }}`;
+     const options = {
+-      filename: context.__filename,
++      filename: context.__filename ?? filename,
        lineOffset: 0,
        columnOffset: -codeDefinition.length
      };
@@ -14,10 +54,50 @@ index 94251cb03527a5a0372e52208c04ef5ba4976568..4eff373a4871098e44ceb7c1caffa3bd
    }
    prepareContext(context) {
 diff --git a/dist/client.mjs b/dist/client.mjs
-index cc2e44f3bbb4ac2450ba7750e8a92f5987fb560c..c291f6151148549f1e6ed12a55276d8e3f881738 100644
+index cc2e44f3bbb4ac2450ba7750e8a92f5987fb560c..2faf69a6a22fb7778f0c65e2c053bc920a4f2b3e 100644
 --- a/dist/client.mjs
 +++ b/dist/client.mjs
-@@ -338,7 +338,9 @@ ${getStack()}`), 2e3);
+@@ -313,32 +313,40 @@ ${getStack()}`), 2e3);
+       __vite_ssr_exports__: exports,
+       __vite_ssr_exportAll__: (obj) => exportAll(exports, obj),
+       __vite_ssr_import_meta__: meta,
+-      // cjs compact
+-      require: createRequire(href),
+-      exports: cjsExports,
+-      module: moduleProxy,
+-      __filename,
+-      __dirname: dirname(__filename)
++      ...(
++        this.options.vmContext
++          ? {}
++          : {
++            // cjs compact
++            require: createRequire(href),
++            exports: cjsExports,
++            module: moduleProxy,
++            __filename,
++            __dirname: dirname(__filename)
++          }
++      )
+     });
+     debugExecute(__filename);
+     if (transformed[0] === "#")
+       transformed = transformed.replace(/^\#\!.*/, (s) => " ".repeat(s.length));
+-    await this.runModule(context, transformed);
++    await this.runModule(context, transformed, __filename);
+     return exports;
+   }
+   getContextPrimitives() {
+     return { Object, Reflect, Symbol };
+   }
+-  async runModule(context, transformed) {
++  async runModule(context, transformed, filename) {
+     const codeDefinition = `'use strict';async (${Object.keys(context).join(",")})=>{{`;
+     const code = `${codeDefinition}${transformed}
+ }}`;
+     const options = {
+-      filename: context.__filename,
++      filename: context.__filename ?? filename,
        lineOffset: 0,
        columnOffset: -codeDefinition.length
      };

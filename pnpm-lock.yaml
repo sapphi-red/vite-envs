@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   vite-node@0.34.3:
-    hash: 4caldqtbm6ivivjovmtbmrjo24
+    hash: 7tfzd2za4owsx5xp6ztaifyet4
     path: patches/vite-node@0.34.3.patch
   vitest@0.34.3:
     hash: tc67lm3m6ka6a3vaxn4hotaqw4
@@ -93,7 +93,7 @@ importers:
         version: 4.4.9(@types/node@20.5.9)
       vite-node:
         specifier: ^0.34.3
-        version: 0.34.3(patch_hash=4caldqtbm6ivivjovmtbmrjo24)(@types/node@20.5.9)
+        version: 0.34.3(patch_hash=7tfzd2za4owsx5xp6ztaifyet4)(@types/node@20.5.9)
       vitest:
         specifier: ^0.34.3
         version: 0.34.3(patch_hash=tc67lm3m6ka6a3vaxn4hotaqw4)(@edge-runtime/vm@3.1.0)
@@ -141,15 +141,6 @@ importers:
       vitest:
         specifier: ^0.34.3
         version: 0.34.3(patch_hash=tc67lm3m6ka6a3vaxn4hotaqw4)(@edge-runtime/vm@3.1.0)
-
-  packages/vitest-environments/vercel-edge:
-    dependencies:
-      '@vite-env/core':
-        specifier: workspace:*
-        version: link:../../core
-      '@vite-env/vercel-edge':
-        specifier: workspace:*
-        version: link:../../vercel-edge
 
 packages:
 
@@ -1786,7 +1777,7 @@ packages:
     engines: {node: '>= 0.4.0'}
     dev: false
 
-  /vite-node@0.34.3(patch_hash=4caldqtbm6ivivjovmtbmrjo24)(@types/node@20.5.9):
+  /vite-node@0.34.3(patch_hash=7tfzd2za4owsx5xp6ztaifyet4)(@types/node@20.5.9):
     resolution: {integrity: sha512-+0TzJf1g0tYXj6tR2vEyiA42OPq68QkRZCu/ERSo2PtsDJfBpDyEfuKbRvLmZqi/CgC7SCBtyC+WjTGNMRIaig==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
@@ -1899,7 +1890,7 @@ packages:
       tinybench: 2.5.0
       tinypool: 0.7.0
       vite: 4.4.9(@types/node@20.5.9)
-      vite-node: 0.34.3(patch_hash=4caldqtbm6ivivjovmtbmrjo24)(@types/node@20.5.9)
+      vite-node: 0.34.3(patch_hash=7tfzd2za4owsx5xp6ztaifyet4)(@types/node@20.5.9)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
       - less
