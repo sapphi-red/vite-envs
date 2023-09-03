@@ -18,9 +18,15 @@ importers:
       '@cloudflare/workers-types':
         specifier: ^4.20230821.0
         version: 4.20230821.0
-      '@vite-env/compat':
+      '@vite-env/cloudflare-pages':
         specifier: workspace:*
-        version: link:../../packages/vite-env-compat
+        version: link:../../packages/cloudflare-pages
+      '@vite-env/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@vite-env/standalone':
+        specifier: workspace:*
+        version: link:../../packages/standalone
       typescript:
         specifier: ^5.0.2
         version: 5.2.2
@@ -28,26 +34,24 @@ importers:
         specifier: ^4.4.9
         version: 4.4.9
 
-  packages/vite-env-compat:
+  packages/cloudflare-pages:
     dependencies:
       '@edge-runtime/vm':
         specifier: ^3.1.0
         version: 3.1.0
-      '@hattip/adapter-node':
-        specifier: ^0.0.34
-        version: 0.0.34
-      '@hono/node-server':
-        specifier: ^1.1.1
-        version: 1.1.1
-      hono:
-        specifier: ^3.5.6
-        version: 3.5.6
-      http-proxy:
-        specifier: ^1.18.1
-        version: 1.18.1
       miniflare:
         specifier: ^3.20230821.0
         version: 3.20230821.0
+    devDependencies:
+      '@vite-env/core':
+        specifier: workspace:*
+        version: link:../core
+      tsup:
+        specifier: ^7.2.0
+        version: 7.2.0
+
+  packages/core:
+    dependencies:
       vite:
         specifier: ^4.4.9
         version: 4.4.9
@@ -55,9 +59,31 @@ importers:
         specifier: ^0.34.3
         version: 0.34.3(patch_hash=4caldqtbm6ivivjovmtbmrjo24)
     devDependencies:
+      tsup:
+        specifier: ^7.2.0
+        version: 7.2.0
+
+  packages/standalone:
+    dependencies:
+      '@edge-runtime/vm':
+        specifier: ^3.1.0
+        version: 3.1.0
+      '@hattip/adapter-node':
+        specifier: ^0.0.34
+        version: 0.0.34
+      http-proxy:
+        specifier: ^1.18.1
+        version: 1.18.1
+      miniflare:
+        specifier: ^3.20230821.0
+        version: 3.20230821.0
+    devDependencies:
       '@types/http-proxy':
         specifier: ^1.17.11
         version: 1.17.11
+      '@vite-env/core':
+        specifier: workspace:*
+        version: link:../core
       tsup:
         specifier: ^7.2.0
         version: 7.2.0
@@ -317,11 +343,6 @@ packages:
     dependencies:
       '@hattip/core': 0.0.34
       node-fetch-native: 1.4.0
-    dev: false
-
-  /@hono/node-server@1.1.1:
-    resolution: {integrity: sha512-0ZfrcW8Y+TAGNzKGoDB1iQ7Gv7uGsGDOYlz7nckXcHRpK60Oxuz1ttiFmdHYmI6kGO+/VJ8Iy58LDhoTPqkiow==}
-    engines: {node: '>=18.0.0'}
     dev: false
 
   /@jridgewell/gen-mapping@0.3.3:
@@ -756,11 +777,6 @@ packages:
       merge2: 1.4.1
       slash: 3.0.0
     dev: true
-
-  /hono@3.5.6:
-    resolution: {integrity: sha512-ycTOpIZJ6yLbjzoE+ojsesC7G7ZXfGSoCIDyvqmzlHc5Mk4Aj48Ed9R5g7gw3v7rOkS81pjcYIvWef/karq1iA==}
-    engines: {node: '>=16.0.0'}
-    dev: false
 
   /http-cache-semantics@4.1.1:
     resolution: {integrity: sha512-er295DKPVsV82j5kw1Gjt+ADA/XYHsajl82cGNQG2eyoPkvgUhX+nDIyelzhIWbbsXP39EHcI6l5tYs2FYqYXQ==}

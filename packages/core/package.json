@@ -1,0 +1,25 @@
+{
+  "name": "@vite-env/core",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "tsup --watch --format=esm --dts --entry src/index.ts --entry src/config.ts",
+    "build": "tsup --format=esm --dts --entry src/index.ts --entry src/config.ts"
+  },
+  "dependencies": {
+    "vite": "^4.4.9",
+    "vite-node": "^0.34.3"
+  },
+  "devDependencies": {
+    "tsup": "^7.2.0"
+  }
+}

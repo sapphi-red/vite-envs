@@ -1,0 +1,30 @@
+{
+  "name": "@vite-env/standalone",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "vite-env": "./bin/vite-env.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "tsup --watch --format=esm src/index.ts --dts",
+    "build": "tsup --format=esm src/index.ts --dts"
+  },
+  "dependencies": {
+    "@hattip/adapter-node": "^0.0.34",
+    "http-proxy": "^1.18.1"
+  },
+  "devDependencies": {
+    "@types/http-proxy": "^1.17.11",
+    "@vite-env/core": "workspace:*",
+    "tsup": "^7.2.0"
+  },
+  "peerDependencies": {
+    "@vite-env/core": "workspace:*"
+  }
+}

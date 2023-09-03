@@ -10,7 +10,9 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230821.0",
-    "@vite-env/compat": "workspace:*",
+    "@vite-env/cloudflare-pages": "workspace:*",
+    "@vite-env/core": "workspace:*",
+    "@vite-env/standalone": "workspace:*",
     "typescript": "^5.0.2",
     "vite": "^4.4.9"
   }
