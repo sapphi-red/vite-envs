@@ -2,14 +2,19 @@ import type { ViteEnvironment } from '@vite-env/core'
 import { EdgeVM } from '@edge-runtime/vm'
 import { Miniflare } from 'miniflare'
 import type { SharedOptions, WorkerOptions } from 'miniflare'
+import path from 'node:path'
+import fs from 'node:fs'
+
+const extensions = ['ts', 'js', 'mts', 'mjs']
 
 export const cloudflarePagesEnv = (
   miniflareOptions: Omit<SharedOptions & WorkerOptions, 'script' | 'modules'>
 ): ViteEnvironment => {
   return {
+    key: 'workerd',
     async setup() {
       if (miniflareOptions.compatibilityFlags?.includes('nodejs_compat')) {
-        // Should be possible by adding a global variable that accesses the Node.js modules
+        // TODO: Should be possible by adding a global variable that accesses the Node.js modules
         // and loading virtual module for `node:*` imports
         // https://developers.cloudflare.com/workers/runtime-apis/nodejs/
         throw new Error("Currently doesn't support Node.js compat")
@@ -29,6 +34,11 @@ export const cloudflarePagesEnv = (
       const caches = await mf.getCaches()
       const edgeRuntimeEnv = new EdgeVM({
         extend(context) {
+          // NOTE: context.EdgeRuntime doesn't exist in CF Workers but preserve that
+          // because context.EdgeRuntime is defined with `configure: false`
+          // instead change the value (`writable: true` is set)
+          context.EdgeRuntime = ''
+
           context.caches = caches
           if (isNavigatorUserAgentEnabled) {
             context.navigator ||= {}
@@ -84,6 +94,19 @@ export const cloudflarePagesEnv = (
             passThroughOnException() {} // TODO: impl
           }
           return await module.default.fetch(request, env, context)
+        },
+        // TODO: support non-Advanced mode
+        selectModule(_request, root) {
+          for (const ext of extensions) {
+            const p = path.resolve(root, `_worker.${ext}`)
+            try {
+              const stat = fs.statSync(p, { throwIfNoEntry: false })
+              if (stat) {
+                return p
+              }
+            } catch {}
+          }
+          return undefined
         },
         async teardown() {
           await mf.dispose()

@@ -1,5 +1,5 @@
 {
-  "name": "example-cloudflare-pages",
+  "name": "example-vercel-edge",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,8 +11,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230821.0",
-    "@vite-env/cloudflare-pages": "workspace:*",
+    "@vite-env/vercel-edge": "workspace:*",
     "@vite-env/core": "workspace:*",
     "@vite-env/standalone": "workspace:*",
     "typescript": "^5.0.2",

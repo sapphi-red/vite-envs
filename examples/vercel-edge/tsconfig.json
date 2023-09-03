@@ -19,5 +19,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "_worker.ts", "worker"]
+  "include": ["src", "api"]
 }

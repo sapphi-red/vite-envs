@@ -34,6 +34,24 @@ importers:
         specifier: ^4.4.9
         version: 4.4.9
 
+  examples/vercel-edge:
+    devDependencies:
+      '@vite-env/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@vite-env/standalone':
+        specifier: workspace:*
+        version: link:../../packages/standalone
+      '@vite-env/vercel-edge':
+        specifier: workspace:*
+        version: link:../../packages/vercel-edge
+      typescript:
+        specifier: ^5.0.2
+        version: 5.2.2
+      vite:
+        specifier: ^4.4.9
+        version: 4.4.9
+
   packages/cloudflare-pages:
     dependencies:
       '@edge-runtime/vm':
@@ -89,6 +107,19 @@ importers:
       vite:
         specifier: ^4.4.9
         version: 4.4.9
+
+  packages/vercel-edge:
+    dependencies:
+      '@edge-runtime/vm':
+        specifier: ^3.1.0
+        version: 3.1.0
+    devDependencies:
+      '@vite-env/core':
+        specifier: workspace:*
+        version: link:../core
+      tsup:
+        specifier: ^7.2.0
+        version: 7.2.0
 
 packages:
 

@@ -1,5 +1,5 @@
 /// <reference types="@vite-env/core/config" />
-import { cloudflarePagesEnv } from '@vite-env/cloudflare-pages'
+import { vercelEdgeEnv } from '@vite-env/vercel-edge'
 import { defineConfig } from 'vite'
 
 export default defineConfig(({ mode }) =>
@@ -7,20 +7,17 @@ export default defineConfig(({ mode }) =>
     ? defineConfig({})
     : defineConfig({
         build: {
-          ssr: './_worker.ts',
+          ssr: true,
           copyPublicDir: false,
           emptyOutDir: false,
           rollupOptions: {
-            output: {
-              entryFileNames: '_worker.js'
-            }
+            input: {
+              'api/foo/handler': './api/foo/handler.ts'
+            },
           }
         },
         ssr: {
-          environment: cloudflarePagesEnv({
-            kvNamespaces: ['FOO_KV'],
-            compatibilityFlags: ['global_navigator']
-          })
+          environment: vercelEdgeEnv()
         },
       })
 )
