@@ -9,11 +9,15 @@
     },
     "./config": {
       "types": "./dist/config.d.ts"
+    },
+    "./compat": {
+      "types": "./dist/compat.d.ts",
+      "default": "./dist/compat.js"
     }
   },
   "scripts": {
-    "dev": "tsup --watch --format=esm --dts --entry src/index.ts --entry src/config.ts",
-    "build": "tsup --format=esm --dts --entry src/index.ts --entry src/config.ts"
+    "dev": "tsup --watch --format=esm --dts --entry src/index.ts --entry src/config.ts --entry src/compat.ts",
+    "build": "tsup --format=esm --dts --entry src/index.ts --entry src/config.ts --entry src/compat.ts"
   },
   "peerDependencies": {
     "vite": "^4.4.9",
@@ -22,6 +26,7 @@
   "devDependencies": {
     "tsup": "^7.2.0",
     "vite": "^4.4.9",
-    "vite-node": "^0.34.3"
+    "vite-node": "^0.34.3",
+    "vitest": "^0.34.3"
   }
 }

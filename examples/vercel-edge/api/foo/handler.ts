@@ -3,7 +3,7 @@ export const config = {
 }
 
 export default async function handler(_request: Request) {
-  return new Response('foo')
+  return new Response('foo:' + Buffer.from('buffer').toString('hex'))
 }
 
 // stop auto reload

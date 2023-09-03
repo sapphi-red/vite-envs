@@ -6,11 +6,15 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./vitest-environment": {
+      "types": "./dist/vitest.d.ts",
+      "default": "./dist/vitest.js"
     }
   },
   "scripts": {
-    "dev": "tsup --watch --format=esm src/index.ts --dts",
-    "build": "tsup --format=esm src/index.ts --dts"
+    "dev": "tsup --watch --format=esm src/index.ts src/vitest.ts --dts",
+    "build": "tsup --format=esm src/index.ts src/vitest.ts --dts"
   },
   "dependencies": {
     "@edge-runtime/vm": "^3.1.0",
@@ -18,9 +22,16 @@
   },
   "devDependencies": {
     "@vite-env/core": "workspace:*",
-    "tsup": "^7.2.0"
+    "tsup": "^7.2.0",
+    "vitest": "^0.34.3"
   },
   "peerDependencies": {
-    "@vite-env/core": "workspace:*"
+    "@vite-env/core": "workspace:*",
+    "vitest": "^0.34.3"
+  },
+  "peerDependenciesMeta": {
+    "vitest": {
+      "optional": true
+    }
   }
 }

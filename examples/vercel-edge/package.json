@@ -8,13 +8,16 @@
     "build": "pnpm run build:client && pnpm run build:server",
     "build:client": "vite build --mode=client",
     "build:server": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "devDependencies": {
-    "@vite-env/vercel-edge": "workspace:*",
+    "@types/node": "^20.5.9",
     "@vite-env/core": "workspace:*",
     "@vite-env/standalone": "workspace:*",
+    "@vite-env/vercel-edge": "workspace:*",
     "typescript": "^5.0.2",
-    "vite": "^4.4.9"
+    "vite": "^4.4.9",
+    "vitest": "^0.34.3"
   }
 }

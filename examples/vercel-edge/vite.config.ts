@@ -1,4 +1,5 @@
 /// <reference types="@vite-env/core/config" />
+/// <reference types="vitest" />
 import { vercelEdgeEnv } from '@vite-env/vercel-edge'
 import { defineConfig } from 'vite'
 
@@ -19,5 +20,9 @@ export default defineConfig(({ mode }) =>
         ssr: {
           environment: vercelEdgeEnv()
         },
+        test: {
+          environment: '@vite-env/vercel-edge',
+          experimentalVmThreads: true
+        }
       })
 )

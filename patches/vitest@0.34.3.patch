@@ -1,0 +1,204 @@
+diff --git a/dist/vendor-environments.8eb4d407.js b/dist/vendor-environments.8eb4d407.js
+index 026d4643dbd4af4d204ad0c9d0bec39ca8c4e529..a5e0170ba17b76782bed069fc34e85905a4be3f0 100644
+--- a/dist/vendor-environments.8eb4d407.js
++++ b/dist/vendor-environments.8eb4d407.js
+@@ -630,15 +630,30 @@ function isBuiltinEnvironment(env) {
+ }
+ function getEnvPackageName(env) {
+   if (env === "node")
+-    return null;
++    return [];
+   if (env in envPackageNames)
+-    return envPackageNames[env];
+-  return `vitest-environment-${env}`;
++    return [envPackageNames[env]];
++  return [`vitest-environment-${env}`, env];
+ }
+ async function loadEnvironment(name, root) {
+   if (isBuiltinEnvironment(name))
+     return environments[name];
+-  const packageId = name[0] === "." || name[0] === "/" ? resolve(root, name) : await resolvePath(`vitest-environment-${name}`, { url: [root] }) ?? resolve(root, name);
++  let packageId
++  if (name[0] === "." || name[0] === "/") {
++    packageId = resolve(root, name)
++  } else {
++    try {
++      packageId = await resolvePath(`vitest-environment-${name}`, { url: [root] })
++    } catch {}
++    if (packageId === undefined) {
++      try {
++        packageId = await resolvePath(`${name}/vitest-environment`, { url: [root] })
++      } catch {}
++    }
++    if (packageId === undefined) {
++      packageId = resolve(root, name);
++    }
++  }
+   const pkg = await import(pathToFileURL(normalize(packageId)).href);
+   if (!pkg || !pkg.default || typeof pkg.default !== "object") {
+     throw new TypeError(
+diff --git a/dist/vendor-node.5ce5f335.js b/dist/vendor-node.5ce5f335.js
+index 9259fd20aac2576890169456226a1ebc4613c0b8..f4a7309a12902ef334d8325c60f7fe82422ef54d 100644
+--- a/dist/vendor-node.5ce5f335.js
++++ b/dist/vendor-node.5ce5f335.js
+@@ -822,7 +822,7 @@ var utils$j = {};
+ 	  };
+ 	  flat(args);
+ 	  return result;
+-	}; 
++	};
+ } (utils$j));
+ 
+ const utils$i = utils$j;
+@@ -2372,7 +2372,7 @@ var constants$3 = {
+ 	    output = `(?:^(?!${output}).*$)`;
+ 	  }
+ 	  return output;
+-	}; 
++	};
+ } (utils$f));
+ 
+ const utils$e = utils$f;
+@@ -5256,7 +5256,7 @@ var fs$5 = {};
+ 	    }
+ 	    return Object.assign(Object.assign({}, exports.FILE_SYSTEM_ADAPTER), fsMethods);
+ 	}
+-	exports.createFileSystemAdapter = createFileSystemAdapter; 
++	exports.createFileSystemAdapter = createFileSystemAdapter;
+ } (fs$5));
+ 
+ Object.defineProperty(settings$3, "__esModule", { value: true });
+@@ -5609,7 +5609,7 @@ var fs$1 = {};
+ 	    }
+ 	    return Object.assign(Object.assign({}, exports.FILE_SYSTEM_ADAPTER), fsMethods);
+ 	}
+-	exports.createFileSystemAdapter = createFileSystemAdapter; 
++	exports.createFileSystemAdapter = createFileSystemAdapter;
+ } (fs$1));
+ 
+ Object.defineProperty(settings$2, "__esModule", { value: true });
+@@ -6950,7 +6950,7 @@ var settings = {};
+ 	        return Object.assign(Object.assign({}, exports.DEFAULT_FILE_SYSTEM_ADAPTER), methods);
+ 	    }
+ 	}
+-	exports.default = Settings; 
++	exports.default = Settings;
+ } (settings));
+ 
+ const taskManager = tasks;
+@@ -14811,7 +14811,7 @@ function requirePrompts$1 () {
+ 		  args.suggest = args.suggest || byTitle;
+ 		  args.choices = [].concat(args.choices || []);
+ 		  return toPrompt('AutocompletePrompt', args);
+-		}; 
++		};
+ 	} (prompts$2));
+ 	return prompts$2;
+ }
+@@ -14989,7 +14989,7 @@ function requireAction () {
+ 
+ 	action = (key, isSelect) => {
+ 	  if (key.meta && key.name !== 'escape') return;
+-	  
++
+ 	  if (key.ctrl) {
+ 	    if (key.name === 'a') return 'first';
+ 	    if (key.name === 'c') return 'abort';
+@@ -14997,7 +14997,7 @@ function requireAction () {
+ 	    if (key.name === 'e') return 'last';
+ 	    if (key.name === 'g') return 'reset';
+ 	  }
+-	  
++
+ 	  if (isSelect) {
+ 	    if (key.name === 'j') return 'down';
+ 	    if (key.name === 'k') return 'up';
+@@ -15090,28 +15090,28 @@ function requireFigures () {
+ 	  arrowRight: '→',
+ 	  radioOn: '◉',
+ 	  radioOff: '◯',
+-	  tick: '✔',	
+-	  cross: '✖',	
+-	  ellipsis: '…',	
+-	  pointerSmall: '›',	
+-	  line: '─',	
+-	  pointer: '❯'	
+-	};	
++	  tick: '✔',
++	  cross: '✖',
++	  ellipsis: '…',
++	  pointerSmall: '›',
++	  line: '─',
++	  pointer: '❯'
++	};
+ 	const win = {
+ 	  arrowUp: main.arrowUp,
+ 	  arrowDown: main.arrowDown,
+ 	  arrowLeft: main.arrowLeft,
+ 	  arrowRight: main.arrowRight,
+ 	  radioOn: '(*)',
+-	  radioOff: '( )',	
+-	  tick: '√',	
+-	  cross: '×',	
+-	  ellipsis: '...',	
+-	  pointerSmall: '»',	
+-	  line: '─',	
+-	  pointer: '>'	
+-	};	
+-	const figures = process.platform === 'win32' ? win : main;	
++	  radioOff: '( )',
++	  tick: '√',
++	  cross: '×',
++	  ellipsis: '...',
++	  pointerSmall: '»',
++	  line: '─',
++	  pointer: '>'
++	};
++	const figures = process.platform === 'win32' ? win : main;
+ 
+ 	 figures_1 = figures;
+ 	return figures_1;
+@@ -17069,7 +17069,7 @@ function requireAutocomplete () {
+ 	    if (this.clearFirst && this.input.length > 0) {
+ 	      this.reset();
+ 	    } else {
+-	      this.done = this.exited = true; 
++	      this.done = this.exited = true;
+ 	      this.aborted = false;
+ 	      this.fire();
+ 	      this.render();
+@@ -17763,7 +17763,7 @@ function requirePrompts () {
+ 		  args.suggest = args.suggest || byTitle;
+ 		  args.choices = [].concat(args.choices || []);
+ 		  return toPrompt('AutocompletePrompt', args);
+-		}; 
++		};
+ 	} (prompts$1));
+ 	return prompts$1;
+ }
+@@ -18042,9 +18042,22 @@ async function startVitest(mode, cliFilters = [], options = {}, viteOverrides) {
+     }
+   }
+   const environmentPackage = getEnvPackageName(ctx.config.environment);
+-  if (environmentPackage && !await ensurePackageInstalled(environmentPackage, root)) {
+-    process.exitCode = 1;
+-    return ctx;
++  if (environmentPackage.length > 0) {
++    let ok = false;
++    for (const pkg of environmentPackage) {
++      if (isPackageExists(pkg, { paths: [root, __dirname$1] })) {
++        ok = true
++        break
++      }
++    }
++    if (!ok) {
++      ok = await ensurePackageInstalled(environmentPackage[0], root)
++    }
++
++    if (!ok) {
++      process.exitCode = 1;
++      return ctx;
++    }
+   }
+   let stdinCleanup;
+   if (process.stdin.isTTY)

@@ -6,6 +6,8 @@ export type ViteEnvironment = {
    */
   key: string
   setup(): Promise<ViteEnvironmentInfo>
+  /** support non-VM env for Vitest */
+  // setup(): Promise<>
 }
 
 export type ViteEnvironmentInfo = {

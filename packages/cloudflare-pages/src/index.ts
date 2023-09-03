@@ -7,9 +7,17 @@ import fs from 'node:fs'
 
 const extensions = ['ts', 'js', 'mts', 'mjs']
 
-export const cloudflarePagesEnv = (
+type Options = {
   miniflareOptions: Omit<SharedOptions & WorkerOptions, 'script' | 'modules'>
-): ViteEnvironment => {
+  /**
+   * Whether to inject bindings as a global variable `$GlobalBindings`.
+   *
+   * Intended to be used for tests.
+   */
+  enableGlobalBindings?: boolean
+}
+
+export const cloudflarePagesEnv = ({ miniflareOptions, ...additionalOptions }: Options): ViteEnvironment => {
   return {
     key: 'workerd',
     async setup() {
@@ -43,6 +51,9 @@ export const cloudflarePagesEnv = (
           if (isNavigatorUserAgentEnabled) {
             context.navigator ||= {}
             context.navigator.userAgent = 'Cloudflare-Workers'
+          }
+          if (additionalOptions?.enableGlobalBindings) {
+            context.$GlobalBindings = bindings
           }
           return context
         }

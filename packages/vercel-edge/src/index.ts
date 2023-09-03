@@ -57,7 +57,7 @@ export const vercelEdgeEnv = (): ViteEnvironment => {
           return await module.default(request, context)
         },
         selectModule(request, root) {
-          const url = new URL(request.url);
+          const url = new URL(request.url)
           if (url.pathname.startsWith('/api/')) {
             const part = path.resolve(root, `.${url.pathname}/handler`)
             for (const ext of extensions) {

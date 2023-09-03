@@ -1,6 +1,14 @@
 /// <reference types="@vite-env/core/config" />
+/// <reference types="vitest" />
 import { cloudflarePagesEnv } from '@vite-env/cloudflare-pages'
 import { defineConfig } from 'vite'
+
+const cfOptions = {
+  miniflareOptions: {
+    kvNamespaces: ['FOO_KV'],
+    compatibilityFlags: ['global_navigator']
+  }
+}
 
 export default defineConfig(({ mode }) =>
   mode === 'client'
@@ -17,10 +25,12 @@ export default defineConfig(({ mode }) =>
           }
         },
         ssr: {
-          environment: cloudflarePagesEnv({
-            kvNamespaces: ['FOO_KV'],
-            compatibilityFlags: ['global_navigator']
-          })
+          environment: cloudflarePagesEnv(cfOptions)
         },
+        test: {
+          environment: '@vite-env/cloudflare-pages',
+          environmentOptions: { ...cfOptions, enableGlobalBindings: true },
+          experimentalVmThreads: true
+        }
       })
 )

@@ -9,7 +9,8 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "vite-node@0.34.3": "patches/vite-node@0.34.3.patch"
+      "vite-node@0.34.3": "patches/vite-node@0.34.3.patch",
+      "vitest@0.34.3": "patches/vitest@0.34.3.patch"
     }
   }
 }
