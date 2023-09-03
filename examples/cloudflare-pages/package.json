@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite-env",
-    "build": "tsc && vite build",
+    "build": "pnpm run build:client && pnpm run build:server",
+    "build:client": "vite build --mode=client",
+    "build:server": "vite build",
     "preview": "vite preview"
   },
   "devDependencies": {

@@ -1,3 +1,4 @@
+/// <reference path="./config.ts" />
 import { createServer, resolveConfig } from 'vite'
 import { ViteNodeServer } from 'vite-node/server'
 import { ViteNodeRunner } from 'vite-node/client'
@@ -21,26 +22,26 @@ export const setup = async () => {
 
   const env = await config.ssr.environment.setup()
 
-  const server = await createServer(inlineConfig)
+  const viteServer = await createServer(inlineConfig)
   process.once('SIGTERM', async () => {
     try {
-      await Promise.allSettled([server.close(), env.teardown()])
+      await Promise.allSettled([viteServer.close(), env.teardown()])
     } finally {
       process.exit()
     }
   })
 
-  await server.pluginContainer.buildStart({})
+  await viteServer.pluginContainer.buildStart({})
 
-  const node = new ViteNodeServer(server)
+  const node = new ViteNodeServer(viteServer)
 
   installSourcemapsSupport({
     getSourceMap: (source) => node.getSourceMap(source)
   })
 
   const runner = new ViteNodeRunner({
-    root: server.config.root,
-    base: server.config.base,
+    root: viteServer.config.root,
+    base: viteServer.config.base,
     fetchModule(id) {
       return node.fetchModule(id)
     },
@@ -48,7 +49,7 @@ export const setup = async () => {
       return node.resolveId(id, importer)
     },
     createHotContext(runner, url) {
-      return createHotContext(runner, server.emitter, [], url)
+      return createHotContext(runner, viteServer.emitter, [], url)
     },
     vmContext: env.getVmContext()
   })
@@ -56,5 +57,5 @@ export const setup = async () => {
   // provide the vite define variable in this context
   await runner.executeId('/@vite/env')
 
-  return { config: server.config, env, runner }
+  return { viteServer, env, runner }
 }

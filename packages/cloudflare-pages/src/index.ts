@@ -42,7 +42,7 @@ export const cloudflarePagesEnv = (
         getVmContext() {
           return edgeRuntimeEnv.context
         },
-        async runModule(module, request) {
+        async runModule(module, request, ctx) {
           if (!('default' in module)) {
             throw new Error('default export should exist')
           }
@@ -58,13 +58,18 @@ export const cloudflarePagesEnv = (
             throw new Error('fetch in default export should be a function')
           }
 
+          const viteUrl = new URL(ctx.viteUrl)
+
           const env = {
             ...bindings,
             ASSETS: {
               async fetch(req: Request) {
+                // NOTE: If Vite uses Universal/Modern middlewares in the future,
+                //       we can avoid using actual HTTP requests.
+                //       Or if we can convert Node middlewares into them.
                 const newUrl = new URL(req.url)
-                newUrl.protocol = 'http'
-                newUrl.host = 'localhost:5173'
+                newUrl.protocol = viteUrl.protocol
+                newUrl.host = viteUrl.host
                 try {
                   return await fetch(new Request(newUrl.href, req))
                 } catch (e) {

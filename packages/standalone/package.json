@@ -17,14 +17,18 @@
   },
   "dependencies": {
     "@hattip/adapter-node": "^0.0.34",
+    "connect": "^3.7.0",
     "http-proxy": "^1.18.1"
   },
   "devDependencies": {
+    "@types/connect": "^3.4.35",
     "@types/http-proxy": "^1.17.11",
     "@vite-env/core": "workspace:*",
-    "tsup": "^7.2.0"
+    "tsup": "^7.2.0",
+    "vite": "^4.4.9"
   },
   "peerDependencies": {
-    "@vite-env/core": "workspace:*"
+    "@vite-env/core": "workspace:*",
+    "vite": "^4.4.9"
   }
 }
