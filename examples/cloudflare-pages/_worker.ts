@@ -1,4 +1,4 @@
-import { KVNamespace } from '@cloudflare/workers-types'
+import type { KVNamespace } from '@cloudflare/workers-types'
 
 type Env = {
   ASSETS: {
@@ -25,7 +25,7 @@ export default {
         }
       }
 
-      return new Response('Ok')
+      return new Response(`Ok: ${navigator.userAgent}`)
     }
     // Otherwise, serve the static assets.
     // Without this, the Worker will error and no assets will be served.

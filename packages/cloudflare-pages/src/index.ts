@@ -8,14 +8,35 @@ export const cloudflarePagesEnv = (
 ): ViteEnvironment => {
   return {
     async setup() {
-      const edgeRuntimeEnv = new EdgeVM()
+      if (miniflareOptions.compatibilityFlags?.includes('nodejs_compat')) {
+        // Should be possible by adding a global variable that accesses the Node.js modules
+        // and loading virtual module for `node:*` imports
+        // https://developers.cloudflare.com/workers/runtime-apis/nodejs/
+        throw new Error("Currently doesn't support Node.js compat")
+      }
+
       const mf = new Miniflare({
         ...miniflareOptions,
         // https://github.com/cloudflare/miniflare/pull/639#issuecomment-1651304980
         script: '',
-        modules: true,
+        modules: true
       })
       const bindings = await mf.getBindings()
+
+      const isNavigatorUserAgentEnabled =
+        !!miniflareOptions.compatibilityFlags?.includes('global_navigator')
+
+      const caches = await mf.getCaches()
+      const edgeRuntimeEnv = new EdgeVM({
+        extend(context) {
+          context.caches = caches
+          if (isNavigatorUserAgentEnabled) {
+            context.navigator ||= {}
+            context.navigator.userAgent = 'Cloudflare-Workers'
+          }
+          return context
+        }
+      })
 
       return {
         getVmContext() {
@@ -40,11 +61,16 @@ export const cloudflarePagesEnv = (
           const env = {
             ...bindings,
             ASSETS: {
-              fetch(req: Request) {
+              async fetch(req: Request) {
                 const newUrl = new URL(req.url)
                 newUrl.protocol = 'http'
                 newUrl.host = 'localhost:5173'
-                return fetch(new Request(newUrl.href, req))
+                try {
+                  return await fetch(new Request(newUrl.href, req))
+                } catch (e) {
+                  console.error('Failed to execute ASSETS.fetch: ', e)
+                  return new Response(null, { status: 500 })
+                }
               }
             }
           }

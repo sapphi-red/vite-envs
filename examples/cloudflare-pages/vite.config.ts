@@ -5,7 +5,8 @@ import { defineConfig } from "vite"
 export default defineConfig({
   ssr: {
     environment: cloudflarePagesEnv({
-      kvNamespaces: ['FOO_KV']
+      kvNamespaces: ['FOO_KV'],
+      compatibilityFlags: ['global_navigator']
     })
   }
 })
