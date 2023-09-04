@@ -10,12 +10,19 @@ export const vercelEdgeEnv = (): ViteEnvironment => {
   return {
     key: 'edge-light',
     async setup() {
+      // TODO: wasm import support
+
       // TODO: Should be possible to support Node.js modules
       // by adding a global variable that accesses the Node.js modules
       // and loading virtual module for Node.js module imports
       // https://vercel.com/docs/functions/edge-functions/edge-runtime#compatible-node.js-modules
 
       const edgeRuntimeEnv = new EdgeVM({
+        // https://vercel.com/docs/functions/edge-functions/edge-runtime#unsupported-apis
+        codeGeneration: {
+          strings: false,
+          wasm: false
+        },
         extend(context) {
           context.Buffer = Buffer
           context.process ||= {}

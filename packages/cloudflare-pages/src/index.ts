@@ -21,6 +21,8 @@ export const cloudflarePagesEnv = ({ miniflareOptions = {}, ...additionalOptions
   return {
     key: 'workerd',
     async setup() {
+      // TODO: wasm import support
+
       if (miniflareOptions.compatibilityFlags?.includes('nodejs_compat')) {
         // TODO: Should be possible by adding a global variable that accesses the Node.js modules
         // and loading virtual module for `node:*` imports
@@ -41,6 +43,14 @@ export const cloudflarePagesEnv = ({ miniflareOptions = {}, ...additionalOptions
 
       const caches = await mf.getCaches()
       const edgeRuntimeEnv = new EdgeVM({
+        codeGeneration: {
+          // https://developers.cloudflare.com/workers/runtime-apis/web-standards/#javascript-standards
+          strings: false,
+          // It's not documented but I **guess** it's not allowed
+          // Example code doesn't use
+          // https://developers.cloudflare.com/workers/runtime-apis/webassembly/javascript/#use-from-javascript
+          wasm: false
+        },
         extend(context) {
           // NOTE: context.EdgeRuntime doesn't exist in CF Workers but preserve that
           // because context.EdgeRuntime is defined with `configure: false`
