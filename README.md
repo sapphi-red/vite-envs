@@ -16,3 +16,12 @@ Because both this and [Vitest](https://vitest.dev/) use vite-node, these environ
 ## What is out of scope?
 
 - build configurations (could include in the future)
+
+## How to try this?
+
+```sh
+$ pnpm i
+$ pnpm build:packages
+$ cd examples/cloudflare-pages # or other directories in example
+$ pnpm dev # or pnpm build
+```
