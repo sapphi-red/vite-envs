@@ -13,9 +13,9 @@ Because both this and [Vitest](https://vitest.dev/) use vite-node, these environ
 - Performant HMR
 - Vitest support
 
-## What is out of scope?
+## What are out of scope?
 
-- build configurations (could include in the future)
+- build configurations (using `ssr.environment` won't change any them)
 
 ## How to try this?
 
