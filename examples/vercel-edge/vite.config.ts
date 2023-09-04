@@ -17,8 +17,13 @@ export default defineConfig(({ mode }) =>
             },
           }
         },
+        resolve: {
+          conditions: ['edge-light']
+        },
         ssr: {
-          environment: vercelEdgeEnv()
+          environment: vercelEdgeEnv(),
+          noExternal: true,
+          target: 'webworker',
         },
         test: {
           environment: '@vite-env/vercel-edge',

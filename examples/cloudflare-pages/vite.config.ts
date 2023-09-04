@@ -24,8 +24,13 @@ export default defineConfig(({ mode }) =>
             }
           }
         },
+        resolve: {
+          conditions: ['workerd']
+        },
         ssr: {
-          environment: cloudflarePagesEnv(cfOptions)
+          environment: cloudflarePagesEnv(cfOptions),
+          noExternal: true,
+          target: 'webworker',
         },
         test: {
           environment: '@vite-env/cloudflare-pages',
