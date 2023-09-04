@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) =>
           }
         },
         resolve: {
-          conditions: ['workerd']
+          conditions: ['worker', 'workerd']
         },
         ssr: {
           environment: cloudflarePagesEnv(cfOptions),

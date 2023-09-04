@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) =>
           }
         },
         resolve: {
-          conditions: ['edge-light']
+          conditions: ['worker', 'edge-light']
         },
         ssr: {
           environment: vercelEdgeEnv(),
