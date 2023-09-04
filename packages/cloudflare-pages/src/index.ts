@@ -17,11 +17,18 @@ type Options = {
   enableGlobalBindings?: boolean
 }
 
-export const cloudflarePagesEnv = ({ miniflareOptions = {}, ...additionalOptions }: Options): ViteEnvironment => {
+export const cloudflarePagesEnv = ({
+  miniflareOptions = {},
+  ...additionalOptions
+}: Options): ViteEnvironment => {
   return {
     key: 'workerd',
     async setup() {
       // TODO: wasm import support
+
+      const parsedCompatDate = parseCompatibilityDate(
+        miniflareOptions.compatibilityDate
+      )
 
       if (miniflareOptions.compatibilityFlags?.includes('nodejs_compat')) {
         // TODO: Should be possible by adding a global variable that accesses the Node.js modules
@@ -38,8 +45,13 @@ export const cloudflarePagesEnv = ({ miniflareOptions = {}, ...additionalOptions
       })
       const bindings = await mf.getBindings()
 
-      const isNavigatorUserAgentEnabled =
-        !!miniflareOptions.compatibilityFlags?.includes('global_navigator')
+      const isNavigatorUserAgentEnabled = isCompatibilityEnabled(
+        parsedCompatDate,
+        miniflareOptions.compatibilityFlags,
+        '2022-03-21',
+        'global_navigator',
+        'no_global_navigator'
+      )
 
       const caches = await mf.getCaches()
       const edgeRuntimeEnv = new EdgeVM({
@@ -135,4 +147,24 @@ export const cloudflarePagesEnv = ({ miniflareOptions = {}, ...additionalOptions
       }
     }
   }
+}
+
+const parseCompatibilityDate = (date: string | undefined) => {
+  const m = date?.match(/^\d+-\d+-\d+$/)
+  if (!m) return new Date(0)
+  return new Date(+m[1], +m[2], +m[3])
+}
+
+const isCompatibilityEnabled = (
+  parsedDate: Date,
+  flags: string[] | undefined,
+  defaultEnabledAtStr: string,
+  flagToEnable: string,
+  flagToDisable: string
+) => {
+  if (flags?.includes(flagToEnable)) return true
+  if (flags?.includes(flagToDisable)) return true
+
+  const defaultEnabledAt = parseCompatibilityDate(defaultEnabledAtStr)
+  return parsedDate >= defaultEnabledAt
 }
