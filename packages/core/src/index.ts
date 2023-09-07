@@ -53,6 +53,7 @@ export const setup = async () => {
     },
     vmContext: env.getVmContext()
   })
+  await runner.setup()
 
   // provide the vite define variable in this context
   await runner.executeId('/@vite/env')

@@ -1,8 +1,92 @@
 diff --git a/dist/client.cjs b/dist/client.cjs
-index 94251cb03527a5a0372e52208c04ef5ba4976568..52e31c243f6a4cceadaf2ae0e6d1c317c3ef8dcd 100644
+index 94251cb03527a5a0372e52208c04ef5ba4976568..9830316c33bfbfd4ed9ead92d0da8703d654b190 100644
 --- a/dist/client.cjs
 +++ b/dist/client.cjs
-@@ -340,32 +340,40 @@ ${getStack()}`), 2e3);
+@@ -2,15 +2,10 @@
+ 
+ Object.defineProperty(exports, '__esModule', { value: true });
+ 
+-var module$1 = require('module');
+-var path = require('path');
+-var node_url = require('node:url');
+-var vm = require('node:vm');
+ var pathe = require('pathe');
+ var createDebug = require('debug');
+ var utils = require('./utils.cjs');
+ var sourceMap = require('./source-map.cjs');
+-require('fs');
+ 
+ function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+ 
+@@ -32,9 +27,9 @@ function _interopNamespace(e) {
+   return Object.freeze(n);
+ }
+ 
+-var vm__default = /*#__PURE__*/_interopDefaultLegacy(vm);
+ var createDebug__default = /*#__PURE__*/_interopDefaultLegacy(createDebug);
+ 
++const AsyncFunction = async function () {}.constructor;
+ const { setTimeout, clearTimeout } = globalThis;
+ const debugExecute = createDebug__default["default"]("vite-node:client:execute");
+ const debugNative = createDebug__default["default"]("vite-node:client:native");
+@@ -170,12 +165,38 @@ class ModuleCacheMap extends Map {
+   }
+ }
+ class ViteNodeRunner {
++  nodeModule;
++  unsafeModule;
+   constructor(options) {
+     this.options = options;
+     this.root = options.root ?? process.cwd();
+     this.moduleCache = options.moduleCache ?? new ModuleCacheMap();
+     this.debug = options.debug ?? (typeof process !== "undefined" ? !!process.env.VITE_NODE_DEBUG_RUNNER : false);
+   }
++  async setup() {
++    if (!this.options.unsafeModule) {
++      const [
++        { default: module },
++        { default: path },
++        { default: url },
++        { default: vm }
++      ] = Promise.all([
++        import('node:module'),
++        import('node:path'),
++        import('node:url'),
++        import('node:vm')
++      ])
++
++      this.nodeModule = {
++        module,
++        path,
++        url,
++        vm
++      }
++    } else {
++      this.unsafeModule = await import(this.options.unsafeModule)
++    }
++  }
+   root;
+   debug;
+   /**
+@@ -275,7 +296,7 @@ ${getStack()}`), 2e3);
+       throw new Error(`[vite-node] Failed to load "${id}" imported from ${callstack[callstack.length - 2]}`);
+     const { Object: Object2, Reflect: Reflect2, Symbol: Symbol2 } = this.getContextPrimitives();
+     const modulePath = utils.cleanUrl(moduleId);
+-    const href = node_url.pathToFileURL(modulePath).href;
++    const href = this.nodeModule ? this.nodeModule.url.pathToFileURL(modulePath).href : id;
+     const meta = { url: href, env };
+     const exports = Object2.create(null);
+     Object2.defineProperty(exports, Symbol2.toStringTag, {
+@@ -309,7 +330,7 @@ ${getStack()}`), 2e3);
+       }
+     });
+     Object2.assign(mod, { code: transformed, exports });
+-    const __filename = node_url.fileURLToPath(href);
++    const __filename = this.nodeModule ? this.nodeModule.url.fileURLToPath(href) : id;
+     const moduleProxy = {
+       set exports(value) {
+         exportAll(cjsExports, value);
+@@ -340,32 +361,49 @@ ${getStack()}`), 2e3);
        __vite_ssr_exports__: exports,
        __vite_ssr_exportAll__: (obj) => exportAll(exports, obj),
        __vite_ssr_import_meta__: meta,
@@ -17,11 +101,11 @@ index 94251cb03527a5a0372e52208c04ef5ba4976568..52e31c243f6a4cceadaf2ae0e6d1c317
 +          ? {}
 +          : {
 +            // cjs compact
-+            require: module$1.createRequire(href),
++            require: this.nodeModule.module.createRequire(href),
 +            exports: cjsExports,
 +            module: moduleProxy,
 +            __filename,
-+            __dirname: path.dirname(__filename)
++            __dirname: this.nodeModule.path.dirname(__filename)
 +          }
 +      )
      });
@@ -37,6 +121,15 @@ index 94251cb03527a5a0372e52208c04ef5ba4976568..52e31c243f6a4cceadaf2ae0e6d1c317
    }
 -  async runModule(context, transformed) {
 +  async runModule(context, transformed, filename) {
++    if (this.unsafeModule) {
++      const code = `'use strict';${transformed}`
++      const fn = this.unsafeModule.default.runInEvalAllowedContext(
++        () => new AsyncFunction(...Object.keys(context), code)
++      )
++      await fn(...Object.values(context));
++      return
++    }
++
      const codeDefinition = `'use strict';async (${Object.keys(context).join(",")})=>{{`;
      const code = `${codeDefinition}${transformed}
  }}`;
@@ -48,16 +141,88 @@ index 94251cb03527a5a0372e52208c04ef5ba4976568..52e31c243f6a4cceadaf2ae0e6d1c317
      };
 -    const fn = vm__default["default"].runInThisContext(code, options);
 +    const fn = this.options.vmContext
-+      ? vm__default["default"].runInContext(code, this.options.vmContext, options)
-+      : vm__default["default"].runInThisContext(code, options);
++      ? this.nodeModule.vm.runInContext(code, this.options.vmContext, options)
++      : this.nodeModule.vm.runInThisContext(code, options);
      await fn(...Object.values(context));
    }
    prepareContext(context) {
 diff --git a/dist/client.mjs b/dist/client.mjs
-index cc2e44f3bbb4ac2450ba7750e8a92f5987fb560c..2faf69a6a22fb7778f0c65e2c053bc920a4f2b3e 100644
+index cc2e44f3bbb4ac2450ba7750e8a92f5987fb560c..95dab5e520222ee720d5012c4a18475e949187cd 100644
 --- a/dist/client.mjs
 +++ b/dist/client.mjs
-@@ -313,32 +313,40 @@ ${getStack()}`), 2e3);
+@@ -1,13 +1,9 @@
+-import { createRequire } from 'node:module';
+-import { dirname } from 'node:path';
+-import { pathToFileURL, fileURLToPath } from 'node:url';
+-import vm from 'node:vm';
+ import { resolve } from 'pathe';
+ import createDebug from 'debug';
+ import { createImportMetaEnvProxy, normalizeModuleId, slash, isInternalRequest, isNodeBuiltin, VALID_ID_PREFIX, normalizeRequestId, toFilePath, cleanUrl, isPrimitive } from './utils.mjs';
+ import { extractSourceMap } from './source-map.mjs';
+-import 'node:fs';
+ 
++const AsyncFunction = async function () {}.constructor;
+ const { setTimeout, clearTimeout } = globalThis;
+ const debugExecute = createDebug("vite-node:client:execute");
+ const debugNative = createDebug("vite-node:client:native");
+@@ -143,12 +139,38 @@ class ModuleCacheMap extends Map {
+   }
+ }
+ class ViteNodeRunner {
++  nodeModule;
++  unsafeModule;
+   constructor(options) {
+     this.options = options;
+     this.root = options.root ?? process.cwd();
+     this.moduleCache = options.moduleCache ?? new ModuleCacheMap();
+     this.debug = options.debug ?? (typeof process !== "undefined" ? !!process.env.VITE_NODE_DEBUG_RUNNER : false);
+   }
++  async setup() {
++    if (!this.options.unsafeModule) {
++      const [
++        { default: module },
++        { default: path },
++        { default: url },
++        { default: vm }
++      ] = Promise.all([
++        import('node:module'),
++        import('node:path'),
++        import('node:url'),
++        import('node:vm')
++      ])
++
++      this.nodeModule = {
++        module,
++        path,
++        url,
++        vm
++      }
++    } else {
++      this.unsafeModule = await import(this.options.unsafeModule)
++    }
++  }
+   root;
+   debug;
+   /**
+@@ -248,7 +270,7 @@ ${getStack()}`), 2e3);
+       throw new Error(`[vite-node] Failed to load "${id}" imported from ${callstack[callstack.length - 2]}`);
+     const { Object: Object2, Reflect: Reflect2, Symbol: Symbol2 } = this.getContextPrimitives();
+     const modulePath = cleanUrl(moduleId);
+-    const href = pathToFileURL(modulePath).href;
++    const href = this.nodeModule ? this.nodeModule.url.pathToFileURL(modulePath).href : id;
+     const meta = { url: href, env };
+     const exports = Object2.create(null);
+     Object2.defineProperty(exports, Symbol2.toStringTag, {
+@@ -282,7 +304,7 @@ ${getStack()}`), 2e3);
+       }
+     });
+     Object2.assign(mod, { code: transformed, exports });
+-    const __filename = fileURLToPath(href);
++    const __filename = this.nodeModule ? this.nodeModule.url.fileURLToPath(href) : id;
+     const moduleProxy = {
+       set exports(value) {
+         exportAll(cjsExports, value);
+@@ -313,32 +335,49 @@ ${getStack()}`), 2e3);
        __vite_ssr_exports__: exports,
        __vite_ssr_exportAll__: (obj) => exportAll(exports, obj),
        __vite_ssr_import_meta__: meta,
@@ -72,11 +237,11 @@ index cc2e44f3bbb4ac2450ba7750e8a92f5987fb560c..2faf69a6a22fb7778f0c65e2c053bc92
 +          ? {}
 +          : {
 +            // cjs compact
-+            require: createRequire(href),
++            require: this.nodeModule.module.createRequire(href),
 +            exports: cjsExports,
 +            module: moduleProxy,
 +            __filename,
-+            __dirname: dirname(__filename)
++            __dirname: this.nodeModule.path.dirname(__filename)
 +          }
 +      )
      });
@@ -92,6 +257,15 @@ index cc2e44f3bbb4ac2450ba7750e8a92f5987fb560c..2faf69a6a22fb7778f0c65e2c053bc92
    }
 -  async runModule(context, transformed) {
 +  async runModule(context, transformed, filename) {
++    if (this.unsafeModule) {
++      const code = `'use strict';${transformed}`
++      const fn = this.unsafeModule.default.runInEvalAllowedContext(
++        () => new AsyncFunction(...Object.keys(context), code)
++      )
++      await fn(...Object.values(context));
++      return
++    }
++
      const codeDefinition = `'use strict';async (${Object.keys(context).join(",")})=>{{`;
      const code = `${codeDefinition}${transformed}
  }}`;
@@ -103,20 +277,29 @@ index cc2e44f3bbb4ac2450ba7750e8a92f5987fb560c..2faf69a6a22fb7778f0c65e2c053bc92
      };
 -    const fn = vm.runInThisContext(code, options);
 +    const fn = this.options.vmContext
-+      ? vm.runInContext(code, this.options.vmContext, options)
-+      : vm.runInThisContext(code, options);
++      ? this.nodeModule.vm.runInContext(code, this.options.vmContext, options)
++      : this.nodeModule.vm.runInThisContext(code, options)
      await fn(...Object.values(context));
    }
    prepareContext(context) {
 diff --git a/dist/types-2dc895bd.d.ts b/dist/types-2dc895bd.d.ts
-index 2f04f08e263928274e7374b3d243a30590833ee3..405cbae0b14560a43a80afe683a6fa87a251b74c 100644
+index 2f04f08e263928274e7374b3d243a30590833ee3..659741bd277518a5c3254d11b84198cb1e30edbe 100644
 --- a/dist/types-2dc895bd.d.ts
 +++ b/dist/types-2dc895bd.d.ts
-@@ -243,6 +243,7 @@ interface ViteNodeRunnerOptions {
+@@ -139,6 +139,7 @@ declare class ModuleCacheMap extends Map<string, ModuleCache> {
+ }
+ declare class ViteNodeRunner {
+     options: ViteNodeRunnerOptions;
++    setup(): Promise<void>;
+     root: string;
+     debug: boolean;
+     /**
+@@ -243,6 +244,8 @@ interface ViteNodeRunnerOptions {
      interopDefault?: boolean;
      requestStubs?: Record<string, any>;
      debug?: boolean;
 +    vmContext?: Record<string, any>;
++    unsafeModule?: string;
  }
  interface ViteNodeResolveId {
      external?: boolean | 'absolute' | 'relative';

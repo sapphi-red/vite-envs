@@ -11,6 +11,13 @@
     "patchedDependencies": {
       "vite-node@0.34.3": "patches/vite-node@0.34.3.patch",
       "vitest@0.34.3": "patches/vitest@0.34.3.patch"
+    },
+    "overrides": {
+      "@cloudflare/workerd-darwin-64": "link:./overrides/workerd-darwin-64",
+      "@cloudflare/workerd-darwin-arm64": "link:./overrides/workerd-darwin-arm64",
+      "@cloudflare/workerd-linux-arm64": "link:./overrides/workerd-linux-arm64",
+      "@cloudflare/workerd-linux-64": "link:./overrides/workerd-linux-64",
+      "@cloudflare/workerd-windows-64": "link:./overrides/workerd-windows-64"
     }
   }
 }
