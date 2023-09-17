@@ -109,7 +109,8 @@ export const cloudflarePagesEnv = ({
               async fetch(req: Request) {
                 // NOTE: If Vite uses Universal/Modern middlewares in the future,
                 //       we can avoid using actual HTTP requests.
-                //       Or if we can convert Node middlewares into them.
+                //       It's difficult to convert Node middlewares into them.
+                //       https://github.com/fastly/http-compute-js#notes--known-issues
                 const newUrl = new URL(req.url)
                 newUrl.protocol = viteUrl.protocol
                 newUrl.host = viteUrl.host
