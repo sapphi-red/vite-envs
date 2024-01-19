@@ -38,7 +38,6 @@ export const cloudflareStandalone = (
         unsafeEvalBinding: 'UNSAFE_EVAL',
         serviceBindings: {
           ASSETS: async (req: Request) => {
-            console.log('assets start')
             const viteUrlString =
               server.resolvedUrls!.local[0] ?? server.resolvedUrls!.network[0]
             const viteUrl = new URL(viteUrlString)
