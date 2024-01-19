@@ -1,5 +1,5 @@
 {
-  "name": "@vite-env/standalone",
+  "name": "@vite-runtime/standalone",
   "private": true,
   "type": "module",
   "bin": {
@@ -9,11 +9,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts"
     }
   },
   "scripts": {
-    "dev": "tsup --watch --format=esm src/index.ts --dts",
-    "build": "tsup --format=esm src/index.ts --dts"
+    "dev": "tsup --watch --format=esm --dts --entry src/index.ts --entry src/config.ts",
+    "build": "tsup --format=esm --dts --entry src/index.ts --entry src/config.ts"
   },
   "dependencies": {
     "@hattip/adapter-node": "^0.0.34",
@@ -23,12 +26,10 @@
   "devDependencies": {
     "@types/connect": "^3.4.35",
     "@types/http-proxy": "^1.17.11",
-    "@vite-env/core": "workspace:*",
     "tsup": "^7.2.0",
-    "vite": "^4.4.9"
+    "vite": "file:../../vite-5.1.0-beta.0.tgz"
   },
   "peerDependencies": {
-    "@vite-env/core": "workspace:*",
-    "vite": "^4.4.9"
+    "vite": "^5.1.0-beta.0"
   }
 }

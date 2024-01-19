@@ -1,6 +1,5 @@
-/// <reference types="@vite-env/core/config" />
-/// <reference types="vitest" />
-import { cloudflarePagesEnv } from '@vite-env/cloudflare-pages'
+/// <reference types="@vite-runtime/standalone/config" />
+import { cloudflareStandalone } from '@vite-runtime/cloudflare-pages'
 import { defineConfig } from 'vite'
 
 const cfOptions = {
@@ -28,14 +27,9 @@ export default defineConfig(({ mode }) =>
           conditions: ['worker', 'workerd']
         },
         ssr: {
-          environment: cloudflarePagesEnv(cfOptions),
+          runtime: cloudflareStandalone(cfOptions),
           noExternal: true,
           target: 'webworker',
-        },
-        test: {
-          environment: '@vite-env/cloudflare-pages',
-          environmentOptions: { ...cfOptions, enableGlobalBindings: true },
-          experimentalVmThreads: true
         }
       })
 )

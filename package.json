@@ -6,11 +6,5 @@
   "scripts": {
     "dev:packages": "pnpm --filter ./packages/* --parallel dev",
     "build:packages": "pnpm --filter ./packages/* build"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "vite-node@0.34.3": "patches/vite-node@0.34.3.patch",
-      "vitest@0.34.3": "patches/vitest@0.34.3.patch"
-    }
   }
 }

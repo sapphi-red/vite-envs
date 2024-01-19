@@ -1,5 +1,5 @@
 {
-  "name": "@vite-runtime/vercel-edge",
+  "name": "@vite-runtime/cloudflare-pages-emulate",
   "private": true,
   "type": "module",
   "exports": {
@@ -13,7 +13,8 @@
     "build": "tsup --format=esm src/index.ts --dts"
   },
   "dependencies": {
-    "@edge-runtime/vm": "^3.1.0"
+    "@edge-runtime/vm": "^3.1.0",
+    "miniflare": "^3.20230821.0"
   },
   "devDependencies": {
     "@vite-runtime/standalone": "workspace:*",

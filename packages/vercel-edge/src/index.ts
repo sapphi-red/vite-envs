@@ -1,41 +1,89 @@
-import type { ViteEnvironment } from '@vite-env/core'
+import { createViteRuntime, type ViteDevServer } from 'vite'
+import {
+  type ViteRuntimeModuleContext,
+  ssrModuleExportsKey,
+  ssrImportMetaKey,
+  ssrImportKey,
+  ssrDynamicImportKey,
+  ssrExportAllKey,
+  // @ts-expect-error export
+  type ResolvedResult,
+  // @ts-expect-error export
+  type SSRImportMetadata,
+  ViteRuntime,
+  type ViteModuleRunner
+} from 'vite/runtime'
 import { EdgeVM } from '@edge-runtime/vm'
-import { Buffer } from 'node:buffer'
+import type { ViteStandaloneRuntime } from '@vite-runtime/standalone'
 import path from 'node:path'
 import fs from 'node:fs'
 
-const extensions = ['ts', 'js', 'mts', 'mjs']
+export const createVercelEdgeRuntime = (
+  server: ViteDevServer
+): Promise<ViteRuntime> => {
+  return createViteRuntime(server, { runner: new VercelEdgeRunner() })
+}
 
-export const vercelEdgeEnv = (): ViteEnvironment => {
+class VercelEdgeRunner implements ViteModuleRunner {
+  // TODO: wasm import support
+  private vm = new EdgeVM({
+    // https://vercel.com/docs/functions/edge-functions/edge-runtime#unsupported-apis
+    codeGeneration: {
+      strings: false,
+      wasm: false
+    },
+    extend(context) {
+      context.Buffer = Buffer
+      context.process ||= {}
+      context.process.env = process.env
+      return context
+    }
+  })
+
+  async runViteModule(
+    context: ViteRuntimeModuleContext,
+    transformed: string
+  ): Promise<any> {
+    // TODO: use file name as function name
+    const initModule = this.vm.evaluate(
+      `(async function(${ssrModuleExportsKey},${ssrImportMetaKey},${ssrImportKey},${ssrDynamicImportKey},${ssrExportAllKey}){"use strict";${transformed}})`
+    )
+    await initModule(
+      context[ssrModuleExportsKey],
+      context[ssrImportMetaKey],
+      context[ssrImportKey],
+      context[ssrDynamicImportKey],
+      context[ssrExportAllKey]
+    )
+    Object.freeze(context[ssrModuleExportsKey])
+  }
+
+  runExternalModule(_filepath: string): Promise<any> {
+    // TODO: support Node.js modules
+    // https://vercel.com/docs/functions/edge-functions/edge-runtime#compatible-node.js-modules
+    throw new Error('Not supported')
+  }
+
+  processImport(
+    mod: Record<string, any>,
+    _fetchResult: ResolvedResult,
+    _metadata?: SSRImportMetadata | undefined
+  ): Record<string, any> {
+    return mod
+  }
+}
+
+export const vercelEdgeStandalone = (): ViteStandaloneRuntime => {
+  const extensions = ['ts', 'js', 'mts', 'mjs']
+
   return {
     key: 'edge-light',
-    async setup() {
-      // TODO: wasm import support
-
-      // TODO: Should be possible to support Node.js modules
-      // by adding a global variable that accesses the Node.js modules
-      // and loading virtual module for Node.js module imports
-      // https://vercel.com/docs/functions/edge-functions/edge-runtime#compatible-node.js-modules
-
-      const edgeRuntimeEnv = new EdgeVM({
-        // https://vercel.com/docs/functions/edge-functions/edge-runtime#unsupported-apis
-        codeGeneration: {
-          strings: false,
-          wasm: false
-        },
-        extend(context) {
-          context.Buffer = Buffer
-          context.process ||= {}
-          context.process.env = process.env
-          return context
-        }
-      })
-
+    async setup(server: ViteDevServer) {
+      const runtime = await createVercelEdgeRuntime(server)
       return {
-        getVmContext() {
-          return edgeRuntimeEnv.context
-        },
-        async runModule(module, request) {
+        async runModule(id, request) {
+          const module = await runtime.executeEntrypoint(id)
+
           // NOTE: doesn't support Edge Middleware
           // https://vercel.com/docs/functions/edge-middleware/middleware-api
           if (!('config' in module)) {

@@ -1,37 +1,33 @@
 {
-  "name": "@vite-env/cloudflare-pages",
+  "name": "@vite-runtime/cloudflare-pages",
   "private": true,
   "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "./vitest-environment": {
-      "types": "./dist/vitest.d.ts",
-      "default": "./dist/vitest.js"
     }
   },
   "scripts": {
-    "dev": "tsup --watch --format=esm src/index.ts src/vitest.ts --dts",
-    "build": "tsup --format=esm src/index.ts src/vitest.ts --dts"
+    "dev:server": "tsup --watch --format=esm src/server/index.ts --dts",
+    "build:server": "tsup --format=esm src/server/index.ts --dts",
+    "dev:client": "tsup --watch --config tsup.client.config.ts",
+    "build:client": "tsup --config tsup.client.config.ts"
   },
   "dependencies": {
-    "@edge-runtime/vm": "^3.1.0",
-    "miniflare": "^3.20230821.0"
+    "birpc": "^0.2.14",
+    "miniflare": "^3.20231218.2",
+    "ws": "^8.16.0"
   },
   "devDependencies": {
-    "@vite-env/core": "workspace:*",
+    "@cloudflare/workers-types": "^4.20230821.0",
+    "@types/ws": "^8.5.10",
+    "@vite-runtime/standalone": "workspace:*",
     "tsup": "^7.2.0",
-    "vitest": "^0.34.3"
+    "vite": "file:../../vite-5.1.0-beta.0.tgz"
   },
   "peerDependencies": {
-    "@vite-env/core": "workspace:*",
-    "vitest": "^0.34.3"
-  },
-  "peerDependenciesMeta": {
-    "vitest": {
-      "optional": true
-    }
+    "@vite-runtime/standalone": "workspace:*",
+    "vite": "^5.1.0-beta.0"
   }
 }

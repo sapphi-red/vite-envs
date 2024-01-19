@@ -8,16 +8,13 @@
     "build": "pnpm run build:client && pnpm run build:server",
     "build:client": "vite build --mode=client",
     "build:server": "vite build",
-    "preview": "vite preview",
-    "test": "vitest"
+    "preview": "vite preview"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230821.0",
-    "@vite-env/cloudflare-pages": "workspace:*",
-    "@vite-env/core": "workspace:*",
-    "@vite-env/standalone": "workspace:*",
+    "@vite-runtime/cloudflare-pages": "workspace:*",
+    "@vite-runtime/standalone": "workspace:*",
     "typescript": "^5.0.2",
-    "vite": "^4.4.9",
-    "vitest": "^0.34.3"
+    "vite": "file:../../vite-5.1.0-beta.0.tgz"
   }
 }

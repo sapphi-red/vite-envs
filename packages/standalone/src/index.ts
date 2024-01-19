@@ -1,13 +1,26 @@
+/// <reference path="./config.ts" />
 import { createServer as createHattipServer } from '@hattip/adapter-node'
 import httpProxy from 'http-proxy'
-import { setup } from '@vite-env/core'
-import { normalizePath } from 'vite'
+import { createServer } from 'vite'
+import path from 'node:path'
+
+export type { ViteStandaloneRuntime } from './types.js'
 
 export const dev = async () => {
-  const { viteServer, env, runner } = await setup()
-  if (!env.runModule || !env.selectModule) {
-    throw new Error('this environment is not supported by vite-env standalone')
+  const viteServer = await createServer()
+  process.once('SIGTERM', async () => {
+    try {
+      await viteServer.close()
+    } finally {
+      process.exit()
+    }
+  })
+
+  const runtimeWithInfo = viteServer.config.ssr.runtime
+  if (!runtimeWithInfo) {
+    throw new Error('ssr.runtime is required for vite-runtime-standalone')
   }
+  const standaloneRuntime = await runtimeWithInfo.setup(viteServer)
 
   // handle unhandledRejection so that the process won't exit
   process.on('unhandledRejection', (err) => {
@@ -25,10 +38,7 @@ export const dev = async () => {
   })
   const hattipServer = createHattipServer(async (ctx) => {
     try {
-      // TODO: should "page reload" clear all modules on vite-node side?
-      runner.moduleCache.clear()
-
-      const resolved = await env.selectModule!(
+      const resolved = await standaloneRuntime.selectModule!(
         ctx.request,
         viteServer.config.root
       )
@@ -47,13 +57,18 @@ export const dev = async () => {
           return new Response(null, { status: 500 })
         }
       }
-      const normalizedResolved = normalizePath(resolved)
+      // TODO: absolute Windows path (id) starts with drive letters, does it need to be converted to URLs?
+      const normalizedResolved =
+        '/' +
+        path.relative(viteServer.config.root, resolved).replaceAll('\\', '/')
 
-      const module = await runner.executeFile(normalizedResolved)
-
-      const res = await env.runModule!(module, ctx.request, {
-        viteUrl: viteUrlString
-      })
+      const res = await standaloneRuntime.runModule!(
+        normalizedResolved,
+        ctx.request,
+        {
+          viteUrl: viteUrlString
+        }
+      )
       return res
     } catch (e) {
       console.error('Error during evaluation: ', e)
