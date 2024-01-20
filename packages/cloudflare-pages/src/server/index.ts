@@ -1,11 +1,11 @@
-import { type ViteDevServer } from 'vite'
+import { type HMRChannel, type HMRPayload, type ViteDevServer } from 'vite'
 import type { ViteStandaloneRuntime } from '@vite-runtime/standalone'
 import path from 'node:path'
 import fs from 'node:fs'
 import { Miniflare, type SharedOptions, Request, Response } from 'miniflare'
-import { WebSocketServer } from 'ws'
+import { WebSocket, WebSocketServer } from 'ws'
 import type { ClientFunctions, ServerFunctions } from '../types.js'
-import { createBirpc } from 'birpc'
+import { createBirpc, type BirpcReturn } from 'birpc'
 import url from 'node:url'
 
 const _dirname = path.dirname(url.fileURLToPath(import.meta.url))
@@ -73,17 +73,30 @@ export const cloudflareStandalone = (
 
       const wss = new WebSocketServer({ host: 'localhost', port: 9400 })
 
+      const hmrChannel = new WssHmrChannel()
+      server.hot.addChannel(hmrChannel)
+
       const serverFunctions: ServerFunctions = {
         fetchModule(id, importer) {
           return server.ssrFetchModule(id, importer)
-        }
+        },
+        hmrSend(_payload) {
+          // TODO: emit?
+        },
       }
       wss.on('connection', (ws) => {
-        createBirpc<ClientFunctions, ServerFunctions>(serverFunctions, {
-          post: (data) => ws.send(data),
-          on: (data) => ws.on('message', data),
-          serialize: (v) => JSON.stringify(v),
-          deserialize: (v) => JSON.parse(v)
+        const rpc = createBirpc<ClientFunctions, ServerFunctions>(
+          serverFunctions,
+          {
+            post: (data) => ws.send(data),
+            on: (data) => ws.on('message', data),
+            serialize: (v) => JSON.stringify(v),
+            deserialize: (v) => JSON.parse(v)
+          }
+        )
+        hmrChannel.clients.set(ws, rpc)
+        ws.on('close', () => {
+          hmrChannel.clients.delete(ws)
         })
       })
 
@@ -124,5 +137,33 @@ export const cloudflareStandalone = (
         }
       }
     }
+  }
+}
+
+class WssHmrChannel implements HMRChannel {
+  name = 'WssHmrChannel'
+  clients = new Map<WebSocket, BirpcReturn<ClientFunctions, ServerFunctions>>()
+
+  listen(): void {}
+  close(): void {}
+
+  on(_event: unknown, _listener: unknown): void {}
+  off(_event: string, _listener: Function): void {}
+
+  send(arg0: unknown, arg1?: unknown): void {
+    let payload: HMRPayload
+    if (typeof arg0 === 'string') {
+      payload = {
+        type: 'custom',
+        event: arg0,
+        data: arg1
+      }
+    } else {
+      payload = arg0 as HMRPayload
+    }
+
+    this.clients.forEach((rpc) => {
+      rpc.hmrSend(payload)
+    })
   }
 }

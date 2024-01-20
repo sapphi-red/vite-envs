@@ -10,15 +10,20 @@ import {
   // @ts-expect-error export
   type ResolvedResult,
   // @ts-expect-error export
-  type SSRImportMetadata
+  type SSRImportMetadata,
+  // @ts-expect-error export
+  type HMRConnection,
+  createHMRHandler
 } from 'vite/runtime'
 import { createBirpc, type BirpcReturn } from 'birpc'
 import type { ClientFunctions, ServerFunctions } from '../types.js'
 import type { Response } from '@cloudflare/workers-types'
+import type { HMRPayload } from 'vite'
 
 declare const __ROOT__: string
 
 let rpc: BirpcReturn<ServerFunctions, ClientFunctions>
+let onHmrRecieve: ((payload: HMRPayload) => void) | undefined
 
 const setupRpc = async () => {
   if (rpc) return
@@ -34,15 +39,32 @@ const setupRpc = async () => {
   }
   ws.accept()
 
-  rpc = createBirpc<ServerFunctions, ClientFunctions>(
-    {},
-    {
-      post: (data) => ws.send(data),
-      on: (data) => ws.addEventListener('message', (e) => data(e.data)),
-      serialize: (v) => JSON.stringify(v),
-      deserialize: (v) => JSON.parse(v)
+  const clientFunctions: ClientFunctions = {
+    hmrSend(payload) {
+      onHmrRecieve?.(payload)
     }
-  )
+  }
+  rpc = createBirpc<ServerFunctions, ClientFunctions>(clientFunctions, {
+    post: (data) => ws.send(data),
+    on: (data) => ws.addEventListener('message', (e) => data(e.data)),
+    serialize: (v) => JSON.stringify(v),
+    deserialize: (v) => JSON.parse(v)
+  })
+}
+
+const hmrConnection: HMRConnection = {
+  isReady() {
+    return !!rpc
+  },
+  send(messages: string) {
+    console.log('send:', messages)
+  },
+  onUpdate(h: any) {
+    onHmrRecieve = h
+    return () => {
+      onHmrRecieve = undefined
+    }
+  }
 }
 
 type UnsafeEvalModule = {
@@ -99,10 +121,13 @@ const runtime = new ViteRuntime(
   {
     root: __ROOT__,
     fetchModule: (id, importer) => rpc.fetchModule(id, importer),
-    hmr: false
+    hmr: {
+      connection: hmrConnection
+    }
   },
   runner
 )
+hmrConnection.onUpdate(createHMRHandler(runtime))
 
 export default {
   async fetch(req: Request, env: any, ctx: any) {
