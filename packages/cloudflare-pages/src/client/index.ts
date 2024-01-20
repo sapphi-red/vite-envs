@@ -98,7 +98,7 @@ const runner = new CloudflarePagesRunner()
 const runtime = new ViteRuntime(
   {
     root: __ROOT__,
-    fetchModule: (id) => rpc.fetchModule(id),
+    fetchModule: (id, importer) => rpc.fetchModule(id, importer),
     hmr: false
   },
   runner

@@ -74,8 +74,8 @@ export const cloudflareStandalone = (
       const wss = new WebSocketServer({ host: 'localhost', port: 9400 })
 
       const serverFunctions: ServerFunctions = {
-        fetchModule(id) {
-          return server.ssrFetchModule(id)
+        fetchModule(id, importer) {
+          return server.ssrFetchModule(id, importer)
         }
       }
       wss.on('connection', (ws) => {
