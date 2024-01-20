@@ -27,9 +27,9 @@
     "@types/connect": "^3.4.35",
     "@types/http-proxy": "^1.17.11",
     "tsup": "^7.2.0",
-    "vite": "file:../../vite-5.1.0-beta.0.tgz"
+    "vite": "file:../../vite-5.1.0-beta.2.tgz"
   },
   "peerDependencies": {
-    "vite": "^5.1.0-beta.0"
+    "vite": "^5.1.0-beta.2"
   }
 }

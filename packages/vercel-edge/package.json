@@ -18,11 +18,11 @@
   "devDependencies": {
     "@vite-runtime/standalone": "workspace:*",
     "tsup": "^7.2.0",
-    "vite": "file:../../vite-5.1.0-beta.0.tgz"
+    "vite": "file:../../vite-5.1.0-beta.2.tgz"
   },
   "peerDependencies": {
     "@vite-runtime/standalone": "workspace:*",
-    "vite": "^5.1.0-beta.0"
+    "vite": "^5.1.0-beta.2"
   },
   "peerDependenciesMeta": {
     "@vite-runtime/standalone": {

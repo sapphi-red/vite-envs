@@ -23,8 +23,8 @@ importers:
         specifier: ^5.0.2
         version: 5.2.2
       vite:
-        specifier: file:../../vite-5.1.0-beta.0.tgz
-        version: file:vite-5.1.0-beta.0.tgz(@types/node@20.5.9)
+        specifier: file:../../vite-5.1.0-beta.2.tgz
+        version: file:vite-5.1.0-beta.2.tgz(@types/node@20.5.9)
 
   examples/cloudflare-pages-emulate:
     devDependencies:
@@ -41,8 +41,8 @@ importers:
         specifier: ^5.0.2
         version: 5.2.2
       vite:
-        specifier: file:../../vite-5.1.0-beta.0.tgz
-        version: file:vite-5.1.0-beta.0.tgz(@types/node@20.5.9)
+        specifier: file:../../vite-5.1.0-beta.2.tgz
+        version: file:vite-5.1.0-beta.2.tgz(@types/node@20.5.9)
 
   examples/vercel-edge:
     devDependencies:
@@ -59,8 +59,8 @@ importers:
         specifier: ^5.0.2
         version: 5.2.2
       vite:
-        specifier: file:../../vite-5.1.0-beta.0.tgz
-        version: file:vite-5.1.0-beta.0.tgz(@types/node@20.5.9)
+        specifier: file:../../vite-5.1.0-beta.2.tgz
+        version: file:vite-5.1.0-beta.2.tgz(@types/node@20.5.9)
 
   packages/cloudflare-pages:
     dependencies:
@@ -87,8 +87,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       vite:
-        specifier: file:../../vite-5.1.0-beta.0.tgz
-        version: file:vite-5.1.0-beta.0.tgz(@types/node@20.5.9)
+        specifier: file:../../vite-5.1.0-beta.2.tgz
+        version: file:vite-5.1.0-beta.2.tgz(@types/node@20.5.9)
 
   packages/cloudflare-pages-emulate:
     dependencies:
@@ -106,8 +106,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       vite:
-        specifier: file:../../vite-5.1.0-beta.0.tgz
-        version: file:vite-5.1.0-beta.0.tgz(@types/node@20.5.9)
+        specifier: file:../../vite-5.1.0-beta.2.tgz
+        version: file:vite-5.1.0-beta.2.tgz(@types/node@20.5.9)
 
   packages/standalone:
     dependencies:
@@ -131,8 +131,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       vite:
-        specifier: file:../../vite-5.1.0-beta.0.tgz
-        version: file:vite-5.1.0-beta.0.tgz(@types/node@20.5.9)
+        specifier: file:../../vite-5.1.0-beta.2.tgz
+        version: file:vite-5.1.0-beta.2.tgz(@types/node@20.5.9)
 
   packages/vercel-edge:
     dependencies:
@@ -147,8 +147,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       vite:
-        specifier: file:../../vite-5.1.0-beta.0.tgz
-        version: file:vite-5.1.0-beta.0.tgz(@types/node@20.5.9)
+        specifier: file:../../vite-5.1.0-beta.2.tgz
+        version: file:vite-5.1.0-beta.2.tgz(@types/node@20.5.9)
 
 packages:
 
@@ -2122,11 +2122,11 @@ packages:
     resolution: {integrity: sha512-wvWkphh5WQsJbVk1tbx1l1Ly4yg+XecD+Mq280uBGt9wa5BKSWf4Mhp6GmrkPixhMxmabYY7RbzlwVP32pbGCg==}
     dev: false
 
-  file:vite-5.1.0-beta.0.tgz(@types/node@20.5.9):
-    resolution: {integrity: sha512-u0VoKy3F34aNdFgFyXZVFFou4BPNCmMtPoWieL8E2tUJRBFibt/CX+sTp9mSzTRhEKUTWaSUXazUnBwaDNPkzA==, tarball: file:vite-5.1.0-beta.0.tgz}
-    id: file:vite-5.1.0-beta.0.tgz
+  file:vite-5.1.0-beta.2.tgz(@types/node@20.5.9):
+    resolution: {integrity: sha512-GetEj1WSiFSXOnCwxRviNG4LM2dIWOcI3Cfr4AVNIcMej5ZA+mKvDPBTgydrqDBsQ2HxtJM3e/nRuOAYvL8ozw==, tarball: file:vite-5.1.0-beta.2.tgz}
+    id: file:vite-5.1.0-beta.2.tgz
     name: vite
-    version: 5.1.0-beta.0
+    version: 5.1.0-beta.2
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
