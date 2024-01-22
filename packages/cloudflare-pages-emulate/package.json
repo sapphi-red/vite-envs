@@ -13,8 +13,8 @@
     "build": "tsup --format=esm src/index.ts --dts"
   },
   "dependencies": {
-    "@edge-runtime/vm": "^3.1.0",
-    "miniflare": "^3.20230821.0"
+    "@edge-runtime/vm": "^3.1.7",
+    "miniflare": "^3.20231218.2"
   },
   "devDependencies": {
     "@vite-runtime/standalone": "workspace:*",

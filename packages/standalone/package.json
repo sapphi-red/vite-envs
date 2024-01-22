@@ -24,8 +24,8 @@
     "http-proxy": "^1.18.1"
   },
   "devDependencies": {
-    "@types/connect": "^3.4.35",
-    "@types/http-proxy": "^1.17.11",
+    "@types/connect": "^3.4.38",
+    "@types/http-proxy": "^1.17.14",
     "tsup": "^7.2.0",
     "vite": "file:../../vite-5.1.0-beta.2.tgz"
   },

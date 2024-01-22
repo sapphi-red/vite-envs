@@ -2,7 +2,6 @@
 import { createServer as createHattipServer } from '@hattip/adapter-node'
 import httpProxy from 'http-proxy'
 import { createServer } from 'vite'
-import path from 'node:path'
 
 export type { ViteStandaloneRuntime } from './types.js'
 
@@ -57,13 +56,8 @@ export const dev = async () => {
           return new Response(null, { status: 500 })
         }
       }
-      // TODO: absolute Windows path (id) starts with drive letters, does it need to be converted to URLs?
-      const normalizedResolved =
-        '/' +
-        path.relative(viteServer.config.root, resolved).replaceAll('\\', '/')
-
       const res = await standaloneRuntime.runModule!(
-        normalizedResolved,
+        resolved,
         ctx.request,
         {
           viteUrl: viteUrlString

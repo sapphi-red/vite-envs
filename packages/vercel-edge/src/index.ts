@@ -6,9 +6,7 @@ import {
   ssrImportKey,
   ssrDynamicImportKey,
   ssrExportAllKey,
-  // @ts-expect-error export
   type ResolvedResult,
-  // @ts-expect-error export
   type SSRImportMetadata,
   ViteRuntime,
   type ViteModuleRunner

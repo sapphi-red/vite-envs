@@ -7,13 +7,9 @@ import {
   ssrImportKey,
   ssrExportAllKey,
   ssrDynamicImportKey,
-  // @ts-expect-error export
   type ResolvedResult,
-  // @ts-expect-error export
   type SSRImportMetadata,
-  // @ts-expect-error export
-  type HMRConnection,
-  createHMRHandler
+  type HMRRuntimeConnection
 } from 'vite/runtime'
 import { createBirpc, type BirpcReturn } from 'birpc'
 import type { ClientFunctions, ServerFunctions } from '../types.js'
@@ -52,7 +48,7 @@ const setupRpc = async () => {
   })
 }
 
-const hmrConnection: HMRConnection = {
+const hmrConnection: HMRRuntimeConnection = {
   isReady() {
     return !!rpc
   },
@@ -127,7 +123,6 @@ const runtime = new ViteRuntime(
   },
   runner
 )
-hmrConnection.onUpdate(createHMRHandler(runtime))
 
 export default {
   async fetch(req: Request, env: any, ctx: any) {
