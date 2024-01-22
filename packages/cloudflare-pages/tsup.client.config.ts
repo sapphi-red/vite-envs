@@ -7,21 +7,5 @@ export default defineConfig({
   },
   format: 'esm',
   noExternal: [/./],
-  esbuildPlugins: [esbuildNoSideEffectPlugin(['picomatch'])],
-  plugins: [
-    {
-      name: 'replace-process.env',
-      renderChunk(code) {
-        if (code.includes('new Proxy(process.env,')) {
-          return {
-            code: code.replace(
-              /new Proxy\(process\.env,/,
-              'new Proxy(typeof process !== "undefined" ? process.env : {},'
-            )
-          }
-        }
-        return null
-      }
-    }
-  ]
+  esbuildPlugins: [esbuildNoSideEffectPlugin(['picomatch'])]
 })
