@@ -76,6 +76,11 @@ class CloudflarePagesRunner implements ViteModuleRunner {
   ): Promise<any> {
     if (!this.unsafeEval) throw new Error('unsafeEval module is not set')
 
+    // @ts-expect-error import.meta.filename doesn't exist
+    delete context[ssrImportMetaKey].filename
+    // @ts-expect-error import.meta.dirname doesn't exist
+    delete context[ssrImportMetaKey].dirname
+
     const initModule = this.unsafeEval.newAsyncFunction(
       '"use strict";' + transformed,
       // TODO: use file name as function name
