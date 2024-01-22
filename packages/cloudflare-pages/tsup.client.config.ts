@@ -1,3 +1,4 @@
+import { esbuildNoSideEffectPlugin } from '../../scripts/esbuildNoSideEffectPlugin.js'
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
@@ -6,6 +7,7 @@ export default defineConfig({
   },
   format: 'esm',
   noExternal: [/./],
+  esbuildPlugins: [esbuildNoSideEffectPlugin(['picomatch'])],
   plugins: [
     {
       name: 'replace-process.env',

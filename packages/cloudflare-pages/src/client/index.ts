@@ -15,6 +15,7 @@ import { createBirpc, type BirpcReturn } from 'birpc'
 import type { ClientFunctions, ServerFunctions } from '../types.js'
 import type { Response } from '@cloudflare/workers-types'
 import type { HMRPayload } from 'vite'
+import { makeLegalIdentifier } from '@rollup/pluginutils'
 
 declare const __ROOT__: string
 
@@ -72,7 +73,8 @@ class CloudflarePagesRunner implements ViteModuleRunner {
 
   async runViteModule(
     context: ViteRuntimeModuleContext,
-    transformed: string
+    code: string,
+    id: string
   ): Promise<any> {
     if (!this.unsafeEval) throw new Error('unsafeEval module is not set')
 
@@ -82,9 +84,8 @@ class CloudflarePagesRunner implements ViteModuleRunner {
     delete context[ssrImportMetaKey].dirname
 
     const initModule = this.unsafeEval.newAsyncFunction(
-      '"use strict";' + transformed,
-      // TODO: use file name as function name
-      'virtual',
+      '"use strict";' + code,
+      makeLegalIdentifier(id),
       ssrModuleExportsKey,
       ssrImportMetaKey,
       ssrImportKey,

@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240117.0",
+    "@rollup/pluginutils": "^5.1.0",
     "@types/ws": "^8.5.10",
     "@vite-runtime/standalone": "workspace:*",
     "tsup": "^7.2.0",

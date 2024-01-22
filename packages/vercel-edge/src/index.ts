@@ -15,6 +15,7 @@ import { EdgeVM } from '@edge-runtime/vm'
 import type { ViteStandaloneRuntime } from '@vite-runtime/standalone'
 import path from 'node:path'
 import fs from 'node:fs'
+import { makeLegalIdentifier } from '@rollup/pluginutils'
 
 export const createVercelEdgeRuntime = (
   server: ViteDevServer
@@ -40,16 +41,17 @@ class VercelEdgeRunner implements ViteModuleRunner {
 
   async runViteModule(
     context: ViteRuntimeModuleContext,
-    transformed: string
+    code: string,
+    id: string
   ): Promise<any> {
     // @ts-expect-error import.meta.filename doesn't exist
     delete context[ssrImportMetaKey].filename
     // @ts-expect-error import.meta.dirname doesn't exist
     delete context[ssrImportMetaKey].dirname
 
-    // TODO: use file name as function name
+    const funcName = makeLegalIdentifier(id)
     const initModule = this.vm.evaluate(
-      `(async function(${ssrModuleExportsKey},${ssrImportMetaKey},${ssrImportKey},${ssrDynamicImportKey},${ssrExportAllKey}){"use strict";${transformed}})`
+      `(async function ${funcName}(${ssrModuleExportsKey},${ssrImportMetaKey},${ssrImportKey},${ssrDynamicImportKey},${ssrExportAllKey}){"use strict";${code}})`
     )
     await initModule(
       context[ssrModuleExportsKey],
