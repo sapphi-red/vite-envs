@@ -14,5 +14,10 @@ export const handleApi = async (request: Request, env: Env, url: URL) => {
       return new Response(null, { status: 204 })
     }
   }
+  if (url.pathname === '/api/error') {
+    const error = new Error('Stacktrace')
+    return new Response(error.stack)
+  }
+
   return new Response(`404 (${navigator.userAgent})`, { status: 404 })
 }

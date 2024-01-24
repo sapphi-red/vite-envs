@@ -18,6 +18,7 @@ import type { HMRPayload } from 'vite'
 import { makeLegalIdentifier } from '@rollup/pluginutils'
 
 declare const __ROOT__: string
+declare const __CODE_LINE_OFFSET__: number
 
 let rpc: BirpcReturn<ServerFunctions, ClientFunctions>
 let onHmrRecieve: ((payload: HMRPayload) => void) | undefined
@@ -70,6 +71,7 @@ type UnsafeEvalModule = {
 
 class CloudflarePagesRunner implements ViteModuleRunner {
   unsafeEval: UnsafeEvalModule | undefined
+  private idMap = new Map<string, string[]>()
 
   async runViteModule(
     context: ViteRuntimeModuleContext,
@@ -78,14 +80,25 @@ class CloudflarePagesRunner implements ViteModuleRunner {
   ): Promise<any> {
     if (!this.unsafeEval) throw new Error('unsafeEval module is not set')
 
+    const escapedId = makeLegalIdentifier(id)
+
+    if (!this.idMap.has(escapedId)) {
+      this.idMap.set(escapedId, [])
+    }
+    const idList = this.idMap.get(escapedId)!
+    let number = idList.indexOf(id)
+    if (number < 0) {
+      number = idList.push(id) - 1
+    }
+
     // @ts-expect-error import.meta.filename doesn't exist
     delete context[ssrImportMetaKey].filename
     // @ts-expect-error import.meta.dirname doesn't exist
     delete context[ssrImportMetaKey].dirname
 
     const initModule = this.unsafeEval.newAsyncFunction(
-      '"use strict";' + code,
-      makeLegalIdentifier(id),
+      '"use strict";' + '\n'.repeat(__CODE_LINE_OFFSET__) + code,
+      `${escapedId}_${number}`,
       ssrModuleExportsKey,
       ssrImportMetaKey,
       ssrImportKey,
@@ -116,6 +129,16 @@ class CloudflarePagesRunner implements ViteModuleRunner {
   ): Record<string, any> {
     return mod
   }
+
+  getGetRealFilenameFromEscapedId(escapedIdWithSuffix: string) {
+    const match = escapedIdWithSuffix.match(/^(.+)_(\d+)$/)
+    if (!match) return undefined
+
+    const escapedId = match[1]
+    const number = +match[2]
+
+    return this.idMap.get(escapedId)?.[number]
+  }
 }
 
 const runner = new CloudflarePagesRunner()
@@ -129,6 +152,34 @@ const runtime = new ViteRuntime(
   },
   runner
 )
+// exists because ViteRuntime assigns it
+const originalPrepareStackTrace = Error.prepareStackTrace!
+Error.prepareStackTrace = (error, stacks) => {
+  const wrappedStacks = stacks.map(
+    (stack) =>
+      new Proxy(stack as any, {
+        get(target, key, receiver) {
+          const value = target[key]
+          if (value instanceof Function) {
+            return function (this: any, ...args: any[]) {
+              const result = value.apply(
+                this === receiver ? target : this,
+                args
+              )
+              if (key === 'getFileName' && typeof result === 'string') {
+                const realFilename =
+                  runner.getGetRealFilenameFromEscapedId(result)
+                return realFilename ?? result
+              }
+              return result
+            }
+          }
+          return value
+        }
+      })
+  )
+  return originalPrepareStackTrace(error, wrappedStacks)
+}
 
 export default {
   async fetch(req: Request, env: any, ctx: any) {

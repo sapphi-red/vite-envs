@@ -11,6 +11,13 @@ import url from 'node:url'
 const _dirname = path.dirname(url.fileURLToPath(import.meta.url))
 const clientPath = path.resolve(_dirname, './client.js')
 
+const AsyncFunction = async function () {}.constructor as typeof Function
+const fnDeclarationLineCount = (() => {
+  const body = '/*code*/'
+  const source = new AsyncFunction('a', 'b', body).toString()
+  return source.slice(0, source.indexOf(body)).split('\n').length - 1
+})()
+
 type Options = {
   miniflareOptions?: Omit<SharedOptions & WorkerOptions, 'script' | 'modules'>
 }
@@ -25,10 +32,9 @@ export const cloudflareStandalone = (
     key: 'workerd',
     async setup(server: ViteDevServer) {
       const clientContent = await fs.promises.readFile(clientPath, 'utf-8')
-      const clientContentReplaced = clientContent.replaceAll(
-        '__ROOT__',
-        JSON.stringify(server.config.root)
-      )
+      const clientContentReplaced = clientContent
+        .replaceAll('__ROOT__', JSON.stringify(server.config.root))
+        .replaceAll('__CODE_LINE_OFFSET__', '' + fnDeclarationLineCount)
 
       mf = new Miniflare({
         ...options.miniflareOptions,
@@ -82,7 +88,7 @@ export const cloudflareStandalone = (
         },
         hmrSend(_payload) {
           // TODO: emit?
-        },
+        }
       }
       wss.on('connection', (ws) => {
         const rpc = createBirpc<ClientFunctions, ServerFunctions>(
