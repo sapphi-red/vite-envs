@@ -1,0 +1,27 @@
+{
+  "name": "@vite-runtime/browser",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "dev:server": "tsup --watch --format=esm src/server/index.ts --dts",
+    "build:server": "tsup --format=esm src/server/index.ts --dts",
+    "dev:client": "tsup --watch --config tsup.client.config.ts",
+    "build:client": "tsup --config tsup.client.config.ts"
+  },
+  "dependencies": {
+    "birpc": "^0.2.14",
+    "vite": "file:../../vite-5.1.0-beta.2.tgz",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "@rollup/pluginutils": "^5.1.0",
+    "@types/ws": "^8.5.10",
+    "tsup": "^7.2.0"
+  }
+}
