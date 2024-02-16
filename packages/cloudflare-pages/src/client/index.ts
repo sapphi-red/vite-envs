@@ -18,7 +18,6 @@ import type { HMRPayload } from 'vite'
 import { makeLegalIdentifier } from '@rollup/pluginutils'
 
 declare const __ROOT__: string
-declare const __CODE_LINE_OFFSET__: number
 
 let rpc: BirpcReturn<ServerFunctions, ClientFunctions>
 let onHmrRecieve: ((payload: HMRPayload) => void) | undefined
@@ -97,7 +96,7 @@ class CloudflarePagesRunner implements ViteModuleRunner {
     delete context[ssrImportMetaKey].dirname
 
     const initModule = this.unsafeEval.newAsyncFunction(
-      '"use strict";' + '\n'.repeat(__CODE_LINE_OFFSET__) + code,
+      '"use strict";' + code,
       `${escapedId}_${number}`,
       ssrModuleExportsKey,
       ssrImportMetaKey,

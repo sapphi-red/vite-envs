@@ -1,4 +1,9 @@
-import { type HMRChannel, type HMRPayload, type ViteDevServer } from 'vite'
+import {
+  type HMRChannel,
+  type HMRPayload,
+  type ViteDevServer,
+  fetchModule
+} from 'vite'
 import type { ViteStandaloneRuntime } from '@vite-runtime/standalone'
 import path from 'node:path'
 import fs from 'node:fs'
@@ -10,13 +15,6 @@ import url from 'node:url'
 
 const _dirname = path.dirname(url.fileURLToPath(import.meta.url))
 const clientPath = path.resolve(_dirname, './client.js')
-
-const AsyncFunction = async function () {}.constructor as typeof Function
-const fnDeclarationLineCount = (() => {
-  const body = '/*code*/'
-  const source = new AsyncFunction('a', 'b', body).toString()
-  return source.slice(0, source.indexOf(body)).split('\n').length - 1
-})()
 
 type Options = {
   miniflareOptions?: Omit<SharedOptions & WorkerOptions, 'script' | 'modules'>
@@ -32,9 +30,10 @@ export const cloudflareStandalone = (
     key: 'workerd',
     async setup(server: ViteDevServer) {
       const clientContent = await fs.promises.readFile(clientPath, 'utf-8')
-      const clientContentReplaced = clientContent
-        .replaceAll('__ROOT__', JSON.stringify(server.config.root))
-        .replaceAll('__CODE_LINE_OFFSET__', '' + fnDeclarationLineCount)
+      const clientContentReplaced = clientContent.replaceAll(
+        '__ROOT__',
+        JSON.stringify(server.config.root)
+      )
 
       mf = new Miniflare({
         ...options.miniflareOptions,
@@ -84,7 +83,7 @@ export const cloudflareStandalone = (
 
       const serverFunctions: ServerFunctions = {
         fetchModule(id, importer) {
-          return server.ssrFetchModule(id, importer)
+          return fetchModule(server, id, importer)
         },
         hmrSend(_payload) {
           // TODO: emit?
