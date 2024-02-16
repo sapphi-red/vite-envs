@@ -1,6 +1,5 @@
-/// <reference types="@vite-env/core/config" />
-/// <reference types="vitest" />
-import { cloudflarePagesEnv } from '@vite-env/cloudflare-pages'
+import { cloudflarePagesRuntimeEnv } from '@vite-runtime/cloudflare-pages'
+import { exampleFramework } from 'example-framework'
 import { defineConfig } from 'vite'
 
 const cfOptions = {
@@ -14,6 +13,10 @@ export default defineConfig(({ mode }) =>
   mode === 'client'
     ? defineConfig({})
     : defineConfig({
+        plugins: [
+          cloudflarePagesRuntimeEnv(cfOptions),
+          exampleFramework('./_worker.ts')
+        ],
         build: {
           ssr: './_worker.ts',
           copyPublicDir: false,
@@ -28,14 +31,8 @@ export default defineConfig(({ mode }) =>
           conditions: ['worker', 'workerd']
         },
         ssr: {
-          environment: cloudflarePagesEnv(cfOptions),
           noExternal: true,
-          target: 'webworker',
-        },
-        test: {
-          environment: '@vite-env/cloudflare-pages',
-          environmentOptions: { ...cfOptions, enableGlobalBindings: true },
-          experimentalVmThreads: true
+          target: 'webworker'
         }
       })
 )

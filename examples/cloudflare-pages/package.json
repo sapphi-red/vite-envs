@@ -4,20 +4,17 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite-env",
+    "dev": "vite",
     "build": "pnpm run build:client && pnpm run build:server",
     "build:client": "vite build --mode=client",
     "build:server": "vite build",
-    "preview": "vite preview",
-    "test": "vitest"
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230821.0",
-    "@vite-env/cloudflare-pages": "workspace:*",
-    "@vite-env/core": "workspace:*",
-    "@vite-env/standalone": "workspace:*",
-    "typescript": "^5.0.2",
-    "vite": "^4.4.9",
-    "vitest": "^0.34.3"
+    "@cloudflare/workers-types": "^4.20240208.0",
+    "@vite-runtime/cloudflare-pages": "workspace:*",
+    "example-framework": "workspace:*",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.3"
   }
 }

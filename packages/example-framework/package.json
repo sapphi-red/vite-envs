@@ -1,5 +1,5 @@
 {
-  "name": "@vite-runtime/vercel-edge",
+  "name": "example-framework",
   "private": true,
   "type": "module",
   "exports": {
@@ -11,10 +11,6 @@
   "scripts": {
     "dev": "tsup --watch --format=esm src/index.ts --dts",
     "build": "tsup --format=esm src/index.ts --dts"
-  },
-  "dependencies": {
-    "@edge-runtime/vm": "^3.2.0",
-    "@rollup/pluginutils": "^5.1.0"
   },
   "devDependencies": {
     "@vite-runtime/types": "workspace:*",
@@ -29,5 +25,8 @@
     "@vite-runtime/types": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "@hattip/adapter-node": "^0.0.42"
   }
 }

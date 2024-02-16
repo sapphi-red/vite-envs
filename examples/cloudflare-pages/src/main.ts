@@ -45,3 +45,8 @@ document.querySelector('#get')!.addEventListener('click', async () => {
   const res = await fetch('/api/foo')
   console.log(await res.text())
 })()
+
+;(async () => {
+  const res = await fetch('/api/error')
+  console.log(await res.text())
+})()

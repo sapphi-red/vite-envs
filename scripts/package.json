@@ -1,0 +1,8 @@
+{
+  "name": "@vite-runtime/scripts",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "esbuild": "^0.18.20"
+  }
+}

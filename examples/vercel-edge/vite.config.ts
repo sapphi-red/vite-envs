@@ -1,33 +1,26 @@
-/// <reference types="@vite-env/core/config" />
-/// <reference types="vitest" />
-import { vercelEdgeEnv } from '@vite-env/vercel-edge'
+import { vercelEdgeRuntimeEnv } from '@vite-runtime/vercel-edge'
+import { exampleFramework } from 'example-framework'
 import { defineConfig } from 'vite'
 
 export default defineConfig(({ mode }) =>
   mode === 'client'
     ? defineConfig({})
     : defineConfig({
+        plugins: [vercelEdgeRuntimeEnv(), exampleFramework('./handler.ts')],
         build: {
           ssr: true,
           copyPublicDir: false,
           emptyOutDir: false,
           rollupOptions: {
-            input: {
-              'api/foo/handler': './api/foo/handler.ts'
-            },
+            input: './handler.ts'
           }
         },
         resolve: {
           conditions: ['worker', 'edge-light']
         },
         ssr: {
-          environment: vercelEdgeEnv(),
           noExternal: true,
-          target: 'webworker',
-        },
-        test: {
-          environment: '@vite-env/vercel-edge',
-          experimentalVmThreads: true
+          target: 'webworker'
         }
       })
 )
