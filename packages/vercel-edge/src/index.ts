@@ -68,14 +68,6 @@ class VercelEdgeRunner implements ViteModuleRunner {
     // https://vercel.com/docs/functions/edge-functions/edge-runtime#compatible-node.js-modules
     throw new Error('Not supported')
   }
-
-  processImport(
-    mod: Record<string, any>,
-    _fetchResult: ResolvedResult,
-    _metadata?: SSRImportMetadata | undefined
-  ): Record<string, any> {
-    return mod
-  }
 }
 
 export const vercelEdgeStandalone = (): ViteStandaloneRuntime => {
