@@ -7,8 +7,6 @@ import {
   ssrImportKey,
   ssrExportAllKey,
   ssrDynamicImportKey,
-  type ResolvedResult,
-  type SSRImportMetadata,
   type HMRRuntimeConnection
 } from 'vite/runtime'
 import { createBirpc, type BirpcReturn } from 'birpc'
@@ -119,14 +117,6 @@ class CloudflarePagesRunner implements ViteModuleRunner {
     // https://developers.cloudflare.com/workers/runtime-apis/nodejs/
     // TODO: support `cloudflare:*` modules and `workerd:*` modules
     throw new Error('Not supported')
-  }
-
-  processImport(
-    mod: Record<string, any>,
-    _fetchResult: ResolvedResult,
-    _metadata?: SSRImportMetadata | undefined
-  ): Record<string, any> {
-    return mod
   }
 
   getGetRealFilenameFromEscapedId(escapedIdWithSuffix: string) {
