@@ -19,17 +19,17 @@
     "build": "tsup --format=esm --dts --entry src/index.ts --entry src/config.ts"
   },
   "dependencies": {
-    "@hattip/adapter-node": "^0.0.34",
+    "@hattip/adapter-node": "^0.0.42",
     "connect": "^3.7.0",
     "http-proxy": "^1.18.1"
   },
   "devDependencies": {
     "@types/connect": "^3.4.38",
     "@types/http-proxy": "^1.17.14",
-    "tsup": "^7.2.0",
-    "vite": "file:../../vite-5.1.0-beta.2.tgz"
+    "tsup": "^8.0.2",
+    "vite": "^5.1.3"
   },
   "peerDependencies": {
-    "vite": "^5.1.0-beta.2"
+    "vite": "^5.1.0"
   }
 }

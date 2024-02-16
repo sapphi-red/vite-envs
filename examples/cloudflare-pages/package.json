@@ -11,10 +11,10 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240117.0",
+    "@cloudflare/workers-types": "^4.20240208.0",
     "@vite-runtime/cloudflare-pages": "workspace:*",
     "@vite-runtime/standalone": "workspace:*",
     "typescript": "^5.3.3",
-    "vite": "file:../../vite-5.1.0-beta.2.tgz"
+    "vite": "^5.1.3"
   }
 }
