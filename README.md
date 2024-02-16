@@ -18,3 +18,14 @@ $ pnpm -r build
 $ cd examples/cloudflare-pages # or other directories in example
 $ pnpm dev
 ```
+
+## Description for each directory
+
+- packages
+  - types: contains types for the common interface (`ViteRuntimeEnv`)
+  - cloudflare-pages: a Vite plugin that exposes `ViteRuntimeEnv` for cloudflare workerd using the actual workerd
+  - vercel-edge: a Vite plugin that exposes `ViteRuntimeEnv` for edge-runtime using [`@edge-runtime/vm`](https://www.npmjs.com/package/@edge-runtime/vm)
+  - example-framework: an example framework that uses `ViteRuntimeEnv`
+- examples
+  - cloudflare-pages: an example using example-framework + cloudflare pages ViteRuntimeEnv plugin
+  - vercel-edge: an example using example-framework + vercel edge ViteRuntimeEnv plugin
