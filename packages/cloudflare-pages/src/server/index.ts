@@ -74,7 +74,6 @@ export const cloudflareStandalone = (
           }
         }
       })
-      const url = await mf.ready
 
       const wss = new WebSocketServer({ host: 'localhost', port: 9400 })
 
@@ -107,12 +106,9 @@ export const cloudflareStandalone = (
 
       return {
         async runModule(id, request) {
-          const resolvedUrl = new URL(request.url)
-          resolvedUrl.protocol = url.protocol
-          resolvedUrl.host = url.host
           request.headers.set('vite-runtime-execute-url', id)
           const body = request.body ? await request.arrayBuffer() : undefined
-          const response = await mf.dispatchFetch(resolvedUrl, {
+          const response = await mf.dispatchFetch(request.url, {
             method: request.method,
             headers: Object.fromEntries(
               request.headers as unknown as Iterable<[string, string]>
