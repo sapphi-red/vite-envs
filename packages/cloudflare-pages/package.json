@@ -9,6 +9,7 @@
     }
   },
   "scripts": {
+    "build": "pnpm run /^build:/",
     "dev:server": "tsup --watch --format=esm src/server/index.ts --dts",
     "build:server": "tsup --format=esm src/server/index.ts --dts",
     "dev:client": "tsup --watch --config tsup.client.config.ts",
@@ -23,12 +24,17 @@
     "@cloudflare/workers-types": "^4.20240208.0",
     "@rollup/pluginutils": "^5.1.0",
     "@types/ws": "^8.5.10",
-    "@vite-runtime/standalone": "workspace:*",
+    "@vite-runtime/types": "workspace:*",
     "tsup": "^8.0.2",
     "vite": "^5.1.3"
   },
   "peerDependencies": {
-    "@vite-runtime/standalone": "workspace:*",
+    "@vite-runtime/types": "workspace:*",
     "vite": "^5.1.0"
+  },
+  "peerDependenciesMeta": {
+    "@vite-runtime/types": {
+      "optional": true
+    }
   }
 }

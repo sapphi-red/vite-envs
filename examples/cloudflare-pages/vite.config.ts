@@ -1,5 +1,5 @@
-/// <reference types="@vite-runtime/standalone/config" />
-import { cloudflareStandalone } from '@vite-runtime/cloudflare-pages'
+import { cloudflarePagesRuntimeEnv } from '@vite-runtime/cloudflare-pages'
+import { exampleFramework } from 'example-framework'
 import { defineConfig } from 'vite'
 
 const cfOptions = {
@@ -13,6 +13,10 @@ export default defineConfig(({ mode }) =>
   mode === 'client'
     ? defineConfig({})
     : defineConfig({
+        plugins: [
+          cloudflarePagesRuntimeEnv(cfOptions),
+          exampleFramework('./_worker.ts')
+        ],
         build: {
           ssr: './_worker.ts',
           copyPublicDir: false,
@@ -27,9 +31,8 @@ export default defineConfig(({ mode }) =>
           conditions: ['worker', 'workerd']
         },
         ssr: {
-          runtime: cloudflareStandalone(cfOptions),
           noExternal: true,
-          target: 'webworker',
+          target: 'webworker'
         }
       })
 )

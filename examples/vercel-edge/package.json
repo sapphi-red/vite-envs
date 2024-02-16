@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite-env",
+    "dev": "vite",
     "build": "pnpm run build:client && pnpm run build:server",
     "build:client": "vite build --mode=client",
     "build:server": "vite build",
@@ -12,8 +12,8 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.19",
-    "@vite-runtime/standalone": "workspace:*",
     "@vite-runtime/vercel-edge": "workspace:*",
+    "example-framework": "workspace:*",
     "typescript": "^5.3.3",
     "vite": "^5.1.3"
   }
